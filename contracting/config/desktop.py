@@ -4,6 +4,7 @@ def get_data():
 	return [
 		{
 			"module_name": "Contracting",
+			"category": "Domains",
 			"color": "grey",
 			"icon": "octicon octicon-file-directory",
 			"type": "module",
