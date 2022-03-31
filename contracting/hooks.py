@@ -173,3 +173,7 @@ user_data_fields = [
 # 	"contracting.auth.validate"
 # ]
 
+domains = {
+	'Contracting':'contracting.domains.contracting'
+}
+
