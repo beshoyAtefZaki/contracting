@@ -5,7 +5,7 @@ import frappe
 from frappe.model.document import Document
 from contracting.contracting.doctype.sales_order.sales_order import set_delivery_date
 from erpnext import get_default_company
-from erpnext.selling.doctype.sales_order.sales_order import is_product_bundle
+from contracting.contracting.doctype.sales_order.sales_order import is_product_bundle
 from frappe.model.mapper import get_mapped_doc
 import json
 from frappe import _
