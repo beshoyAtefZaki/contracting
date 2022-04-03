@@ -1,5 +1,4 @@
 {
- "actions": [],
  "allow_rename": 1,
  "autoname": "format:COM-{DD}-{MM}-{YY}-{####}",
  "creation": "2021-11-21 17:56:12.664139",
@@ -72,7 +71,6 @@
    "fieldname": "contractor",
    "fieldtype": "Link",
    "label": "Contractor",
-   "mandatory_depends_on": "eval:doc.comparison_type =='From Contractor' ",
    "options": "Customer"
   },
   {
@@ -271,6 +269,7 @@
    "options": "Tender"
   },
   {
+   "allow_on_submit": 1,
    "fetch_from": "tender.current_status",
    "fieldname": "tender_status",
    "fieldtype": "Read Only",
@@ -301,10 +300,8 @@
    "read_only": 1
   }
  ],
- "index_web_pages_for_search": 1,
  "is_submittable": 1,
- "links": [],
- "modified": "2022-03-08 15:13:59.395036",
+ "modified": "2022-04-03 11:53:27.707550",
  "modified_by": "Administrator",
  "module": "Contracting",
  "name": "Comparison",

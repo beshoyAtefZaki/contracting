@@ -51,6 +51,7 @@ frappe.ui.form.on("Tender", {
   },
   company(frm) {},
   refresh: function (frm) {
+    frm.events.set_mandatory_fields(frm)
     if (
       frm.doc.docstatus == 0 &&
       !frm.__islocal &&
@@ -100,6 +101,7 @@ frappe.ui.form.on("Tender", {
     }
   },
   mode_of_payment(frm) {
+    frm.events.set_mandatory_fields(frm)
     frappe.call({
       method: "get_payment_account",
       doc: frm.doc,
@@ -138,6 +140,41 @@ frappe.ui.form.on("Tender", {
     frm.refresh_field("insurance_amount");
   },
 
+  insurance_amount:function(frm){
+    frm.events.set_mandatory_fields(frm)
+  },
+  risk_insurance_amount:function(frm){
+    frm.events.set_mandatory_fields(frm)
+  },
+
+  terms_paid:function(frm){
+    frm.events.set_mandatory_fields(frm)
+  },
+  terms_sheet_amount:function(frm){
+    frm.events.set_mandatory_fields(frm)
+  },
+
+
+  set_mandatory_fields(frm) {
+
+    frm.set_df_property("terms_sheet_amount", "read_only" , frm.doc.terms_paid==1 )
+
+
+    frm.set_df_property("project_account", "reqd", frm.doc.terms_sheet_amount > 0 || frm.doc.insurance_amount > 0 )
+    frm.set_df_property("mode_of_payment", "reqd", frm.doc.terms_sheet_amount > 0 || frm.doc.insurance_amount > 0 )
+
+    frm.set_df_property("terms_sheet_cost_center", "reqd" , frm.doc.terms_sheet_amount  > 0 )
+    frm.set_df_property("terms_sheet_cost_center", "read_only" , frm.doc.terms_paid==1 )
+
+
+    frm.set_df_property("reference_no", "reqd", frm.doc.mode_of_payment != "Cash" && frm.doc.mode_of_payment )
+    frm.set_df_property("reference_date", "reqd", frm.doc.mode_of_payment != "Cash"  && frm.doc.mode_of_payment)
+
+    frm.set_df_property("risk_insurance_account","reqd",frm.doc.risk_insurance_amount > 0)
+    frm.set_df_property("risk_insurance_cost_center","reqd",frm.doc.risk_insurance_amount > 0)
+
+    
+  },
 
 
 current_status	:function(frm){

@@ -30,7 +30,8 @@ class Tender(Document):
     def insert(self, ignore_permissions=None, ignore_links=None, ignore_if_duplicate=False, ignore_mandatory=None, set_name=None, set_child_names=True):
         self.terms_paid = 0
         self.insurance_paid = 0
-        return super().insert(ignore_permissions=ignore_permissions, ignore_links=ignore_links, ignore_if_duplicate=ignore_if_duplicate, ignore_mandatory=ignore_mandatory, set_name=set_name, set_child_names=set_child_names)
+        # return super().insert(ignore_permissions=ignore_permissions, ignore_links=ignore_links, ignore_if_duplicate=ignore_if_duplicate, ignore_mandatory=ignore_mandatory, set_name=set_name, set_child_names=set_child_names)
+        return super().insert(ignore_permissions=ignore_permissions, ignore_links=ignore_links, ignore_if_duplicate=ignore_if_duplicate, ignore_mandatory=ignore_mandatory)
 
     @frappe.whitelist()
     def get_payment_account(self):
