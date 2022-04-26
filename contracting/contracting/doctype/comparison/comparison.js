@@ -170,6 +170,7 @@ frappe.ui.form.on("Comparison", {
       });
     }
 
+    
     var dialog = new frappe.ui.Dialog({
       title: __("Select Items"),
       fields: [

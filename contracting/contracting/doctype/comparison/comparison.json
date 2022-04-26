@@ -30,6 +30,8 @@
   "column_break_15",
   "insurance_value_rate",
   "delevery_insurance_value_rate_",
+  "section_break_25",
+  "insurances",
   "terms_sheet_section_section",
   "data_19",
   "item",
@@ -53,7 +55,8 @@
    "fieldname": "comparison_type",
    "fieldtype": "Select",
    "label": "Comparison Type",
-   "options": "Direct\nFrom Contractor"
+   "options": "Direct\nFrom Contractor",
+   "read_only": 1
   },
   {
    "fieldname": "column_break_2",
@@ -115,25 +118,31 @@
    "allow_on_submit": 1,
    "fieldname": "insurance_value_rate",
    "fieldtype": "Percent",
-   "label": "Insurance value Rate(%)"
+   "label": "Insurance value Rate(%)",
+   "read_only": 1
   },
   {
    "fieldname": "delevery_insurance_value_rate_",
    "fieldtype": "Percent",
-   "label": "Delevery Insurance value Rate (%)"
+   "label": "Delevery Insurance value Rate (%)",
+   "read_only": 1
   },
   {
    "fieldname": "insurance_method",
    "fieldtype": "Select",
+   "hidden": 1,
    "label": "Insurance Method ",
-   "options": "Bank Guarantee\nCash"
+   "options": "Bank Guarantee\nCash",
+   "read_only": 1
   },
   {
    "depends_on": "eval:doc.insurance_method =='Bank Guarantee'",
    "fieldname": "bank_guarantee",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Bank Guarantee",
-   "options": "Bank Guarantee"
+   "options": "Bank Guarantee",
+   "read_only": 1
   },
   {
    "fetch_from": "customer.customer_name",
@@ -195,7 +204,8 @@
    "fieldname": "project",
    "fieldtype": "Link",
    "label": "Project",
-   "options": "Project"
+   "options": "Project",
+   "read_only": 1
   },
   {
    "fieldname": "totals_section",
@@ -266,7 +276,8 @@
    "fieldname": "tender",
    "fieldtype": "Link",
    "label": "Tender",
-   "options": "Tender"
+   "options": "Tender",
+   "read_only": 1
   },
   {
    "allow_on_submit": 1,
@@ -279,6 +290,7 @@
    "default": "0",
    "fieldname": "allow_material_over_price",
    "fieldtype": "Check",
+   "hidden": 1,
    "label": "Allow Material Issue with Rate more than Item Price"
   },
   {
@@ -298,10 +310,21 @@
    "fieldtype": "Currency",
    "label": "Total Cost Amount",
    "read_only": 1
+  },
+  {
+   "fieldname": "section_break_25",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "insurances",
+   "fieldtype": "Table",
+   "label": "Insurances",
+   "options": "Tender Incurance",
+   "read_only": 1
   }
  ],
  "is_submittable": 1,
- "modified": "2022-04-03 11:53:27.707550",
+ "modified": "2022-04-18 12:30:42.052385",
  "modified_by": "Administrator",
  "module": "Contracting",
  "name": "Comparison",

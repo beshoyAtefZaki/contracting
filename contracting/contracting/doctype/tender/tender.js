@@ -52,6 +52,99 @@ frappe.ui.form.on("Tender", {
   company(frm) {},
   refresh: function (frm) {
     frm.events.set_mandatory_fields(frm)
+    frm.add_custom_button(
+      __("Insurance Payments"),
+      function () {
+        console.log("Fan")
+      },
+      
+      __("Create") )
+
+    //     var details = []
+    //     var i =0 
+    //     for (i =0 ; i < frm.doc.insurances.length ; i ++){
+         
+    //       if (frm.doc.insurances[i].invocied== 0){
+    //         details.push(
+    //           {
+               
+    //           "incurance_detail" :frm.doc.insurances[i].incurance_detail  ,
+    //           "type_of_insurance" : frm.doc.insurances[i].type_of_insurance ,
+    //           "amount" : frm.doc.insurances[i].amount }
+             
+    //         )
+
+    //      }}
+    //     var insurance_dialoge = new frappe.ui.Dialog({
+    //       title: __("Select incurance"),
+    //        'fields': [
+    //         {
+    //           fieldtype: "Check",
+    //           label: __("Against Default Supplier"),
+    //           fieldname: "against_default_supplier",
+    //           default:0,
+    //           hidden: 1,
+    //         },
+         
+    //         {
+    //           fieldname: "items_for_po",
+    //           fieldtype: "Table",
+    //           label: "Select Items",
+    //           cannot_add_rows: true,
+    //           in_place_edit: true,
+    //           reqd: 1,
+    //           data :details,
+    //           fields: [
+    //             {
+    //               fieldtype: "Data",
+    //               fieldname: "incurance_detail",
+    //               label: __("Incurance Detail"),
+    //               read_only: 1,
+    //               in_list_view: 1,
+    //             },
+    //             {
+    //               fieldtype: "Data",
+    //               fieldname: "type_of_insurance",
+    //               label: __("Incurancetype"),
+    //               read_only: 1,
+    //               in_list_view: 1,
+    //             },
+    //             {
+    //               fieldtype: "Data",
+    //               fieldname: "amount",
+    //               label: __("Amount"),
+    //               read_only: 1,
+    //               in_list_view: 1,
+    //             },] ,
+              
+    //           }
+          
+        
+        
+    //       ]  ,
+    //       primary_action_label: "Create Payments",
+    //       primary_action: function(){
+    //         insurance_dialoge.get_field("items_for_po").refresh();
+    //         var data = insurance_dialoge.fields_dict.items_for_po.grid.get_selected_children()
+            
+           
+           
+    //         data.forEach(function(item) {
+    //           console.log(item)
+    //         })
+    //         insurance_dialoge.hide();
+    //         show_alert("Created");
+    //     }
+
+          
+
+
+    //     })
+    //     insurance_dialoge.fields_dict["items_for_po"].df.data = [{"item_code" : "defaulte valus"}]
+    //     insurance_dialoge.show();
+    //   },
+    //   __("Create")
+    // );
     if (
       frm.doc.docstatus == 0 &&
       !frm.__islocal &&
