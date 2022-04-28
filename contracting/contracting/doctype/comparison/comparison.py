@@ -128,7 +128,23 @@ class Comparison(Document):
 					frappe.msgprint("Journal Entry '%s' Created Successfully"%lnk2)
 	
 				elif item.pay_method == 'Bank Guarantee':
-					doc = frappe.new_doc("Bank Guarantee")
+					#try:
+						doc = frappe.new_doc("Bank Guarantee")
+						doc.bg_type  = 'Receiving'
+						doc.reference_doctype = "Sales Order"
+						doc.start_date = date.today()
+						doc.end_date  = current_date
+						doc.customer = self.customer
+						doc.amount = item.amount
+						doc.bank  = item.bank
+						doc.bank_account = item.account
+						doc.save()
+						# doc.docstatus =1
+						# doc.save()
+						lnk3 = get_link_to_form(doc.doctype, doc.name)
+						frappe.msgprint("Bank Guarantee '%s' Created Successfully"%lnk3)
+					# except Exception as ex:
+					# 	print("error ======> ",str(ex))
 
 	def create_journal_entry(self,debit_account=None,credit_account=None,party_type=None,party=None,amount=0,company_name=None,posting_date=nowdate()):
 		je = frappe.new_doc("Journal Entry")
