@@ -59,11 +59,11 @@ class Tender(Document):
                 self.total_insurance = float(self.total_insurance or 0) + float(line.amount or 0)
                 # frappe.throw(str(self.total_insurance))
                 if line.type_of_insurance == "For a Specified Period" :
-                    self.insurances_on_deleviery  += float(line.amount)
+                    self.insurances_on_deleviery  += float(line.amount or 0)
                 if line.type_of_insurance == "Expenses" :
                      self.expenses_insurances  += float(line.amount)
                 if line.type_of_insurance == "Payed in Clearance" :
-                    self.payed_in_clearance_insurances +=  float(line.amount)
+                    self.payed_in_clearance_insurances +=  float(line.amount or 0)
     def validate_comparison(self) :
         if self.current_status == "Approved" and not self.comparison :
             frappe.throw(_(""" Can Not Approve Tender  Without Comparison  """))

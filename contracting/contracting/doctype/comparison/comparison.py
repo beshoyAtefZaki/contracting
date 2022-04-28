@@ -96,7 +96,66 @@ class Comparison(Document):
 		return items
 
 
+	#@frappe.whitelist()
+	def create_insurance_payment(self,*args,**kwargs):
+		from datetime import timedelta, date
+		company = frappe.get_doc('Company',self.company)
 
+		current_date = date.today() + timedelta(days=5)
+
+		for item in self.insurances:
+			if item.type_of_insurance == 'For a Specified Period':
+				if item.pay_method == 'Cash':
+					je = self.create_journal_entry(
+						debit_account = company.insurance_account_for_others_from_us,
+						credit_account = company.default_cash_account,
+						amount = item.amount,
+						company_name = company.name
+					)
+					lnk = get_link_to_form(je.doctype, je.name)
+					je.docstatus = 1
+					je.save()
+					frappe.msgprint("Journal Entry '%s' Created Successfully"%lnk)
+
+					je2 = self.create_journal_entry(
+						debit_account  = company.default_cash_account,
+						credit_account = company.insurance_account_for_others_from_us ,
+						amount = item.amount,
+						company_name = company.name,
+						posting_date = current_date
+					)
+					lnk2 = get_link_to_form(je.doctype, je2.name)
+					frappe.msgprint("Journal Entry '%s' Created Successfully"%lnk2)
+	
+				elif item.pay_method == 'Bank Guarantee':
+					doc = frappe.new_doc("Bank Guarantee")
+
+	def create_journal_entry(self,debit_account=None,credit_account=None,party_type=None,party=None,amount=0,company_name=None,posting_date=nowdate()):
+		je = frappe.new_doc("Journal Entry")
+		je.posting_date = posting_date
+		je.voucher_type = 'Journal Entry'
+		je.company = company_name
+		#je.remark = f'Journal Entry against Insurance for {self.doctype} : {self.name}'
+
+		###credit
+		je.append("accounts", {
+			"account": credit_account,
+			"credit_in_account_currency": flt(amount),
+			"reference_type": self.doctype,
+			"reference_name": self.name,
+			"project": self.project,
+		})
+		## debit
+		je.append("accounts", {
+			"account":   debit_account,
+			"debit_in_account_currency": flt(amount),
+			"reference_type": self.doctype,
+			"reference_name": self.name
+		})
+		je.save()
+
+		#lnk = get_link_to_form(je.doctype, je.name)
+		return je
 
 @frappe.whitelist()
 def get_item_price(item_code):

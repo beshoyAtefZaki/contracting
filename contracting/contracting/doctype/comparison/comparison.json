@@ -24,12 +24,15 @@
   "main_section_section",
   "comparison_number",
   "total",
+  "insurances_on_deleviery",
   "column_break_11",
   "insurance_method",
   "bank_guarantee",
+  "expenses_insurances",
   "column_break_15",
   "insurance_value_rate",
   "delevery_insurance_value_rate_",
+  "payed_in_clearance_insurances",
   "section_break_25",
   "insurances",
   "terms_sheet_section_section",
@@ -321,10 +324,28 @@
    "label": "Insurances",
    "options": "Tender Incurance",
    "read_only": 1
+  },
+  {
+   "fieldname": "insurances_on_deleviery",
+   "fieldtype": "Currency",
+   "label": "Insurances On Deleviery",
+   "read_only": 1
+  },
+  {
+   "fieldname": "expenses_insurances",
+   "fieldtype": "Currency",
+   "label": "Expenses Insurances",
+   "read_only": 1
+  },
+  {
+   "fieldname": "payed_in_clearance_insurances",
+   "fieldtype": "Currency",
+   "label": "Payed In Clearance Insurances",
+   "read_only": 1
   }
  ],
  "is_submittable": 1,
- "modified": "2022-04-18 12:30:42.052385",
+ "modified": "2022-04-27 11:32:43.459114",
  "modified_by": "Administrator",
  "module": "Contracting",
  "name": "Comparison",

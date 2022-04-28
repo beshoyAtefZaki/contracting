@@ -453,6 +453,49 @@ data = {
                 "fetch_from": "comparison_item.item_name",
                 "label": "Against Item Name",
             }
+        ],
+
+        'Bank Account':
+        [   
+            {
+                "fieldname": "grantee_section",
+                "fieldtype": "Section Break",
+                "insert_after": "mask",
+                "label": "Bank grantee section ",
+
+            },
+            {
+                "fieldname": "income_bank_grantee_rate",
+                "fieldtype": "Percent",
+                "insert_after": "grantee_section",
+                "label": "Income Bank Grantee Rate",
+            },
+            {
+                "fieldname": "outcome_bank_grantee_rate",
+                "fieldtype": "Percent",
+                "insert_after": "income_bank_grantee_rate",
+                "label": "Outcome Bank Grantee Rate",
+            },
+            {
+                "fieldname": "col_22",
+                "fieldtype": "Column Break",
+                "insert_after": "outcome_bank_grantee_rate",
+                "label": "",
+            },
+            {
+                "fieldname": "income_bank_grantee_cost_account",
+                "fieldtype": "Link",
+                "options" : "Account",
+                "insert_after": "col_22",
+                "label": "Income Bank grantee Cost  Account",
+            },
+            {
+                "fieldname": "outcome_bank_grantee_cost_account",
+                "fieldtype": "Link",
+                "options" : "Account",
+                "insert_after": "income_bank_grantee_cost_account",
+                "label": "Outcome bank grantee Cost Account",
+            },
         ]
 
 
