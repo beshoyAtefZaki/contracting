@@ -112,6 +112,9 @@ class Comparison(Document):
 							debit_account = company.insurance_account_for_others_from_us,
 							credit_account = company.default_cash_account,
 							amount = item.amount,
+							party_type="Customer",
+							party=self.customer,
+							debit_party = True,
 							company_name = company.name
 						)
 						lnk = get_link_to_form(je.doctype, je.name)
@@ -124,7 +127,10 @@ class Comparison(Document):
 							credit_account = company.insurance_account_for_others_from_us ,
 							amount = item.amount,
 							company_name = company.name,
-							posting_date = current_date
+							posting_date = current_date,
+							party_type="Customer",
+							party=self.customer,
+							credit_party = True,
 						)
 						lnk2 = get_link_to_form(je.doctype, je2.name)
 						item.invocied = 1
@@ -161,7 +167,16 @@ class Comparison(Document):
 						# except Exception as ex:
 						# 	print("error ======> ",str(ex))
 
-	def create_journal_entry(self,debit_account=None,credit_account=None,party_type=None,party=None,amount=0,company_name=None,posting_date=nowdate()):
+	def create_journal_entry(self,debit_account=None,
+							credit_account=None,
+							party_type=None,
+							party=None,
+							debit_party  = False,
+							credit_party = False,
+							amount=0,
+							company_name=None,
+							posting_date=nowdate()):
+
 		je = frappe.new_doc("Journal Entry")
 		je.posting_date = posting_date
 		je.voucher_type = 'Journal Entry'
@@ -173,6 +188,8 @@ class Comparison(Document):
 			"account": credit_account,
 			"credit_in_account_currency": flt(amount),
 			"reference_type": self.doctype,
+			"party":party if credit_party else None,
+			"party_type":party_type if credit_party else None,
 			"reference_name": self.name,
 			"project": self.project,
 		})
@@ -181,6 +198,8 @@ class Comparison(Document):
 			"account":   debit_account,
 			"debit_in_account_currency": flt(amount),
 			"reference_type": self.doctype,
+			"party":party if debit_party else None,
+			"party_type":party_type if debit_party else None,
 			"reference_name": self.name
 		})
 		je.save()
