@@ -21,6 +21,7 @@
   "column_break_6",
   "total_amount",
   "insurances_on_deleviery",
+  "delevery_insurance_amount",
   "expenses_insurances",
   "payed_in_clearance_insurances",
   "total_insurance",
@@ -298,10 +299,15 @@
    "fieldname": "payed_in_clearance_insurances",
    "fieldtype": "Read Only",
    "label": "Payed in Clearance insurances"
+  },
+  {
+   "fieldname": "delevery_insurance_amount",
+   "fieldtype": "Read Only",
+   "label": "Delevery Insurance Amount"
   }
  ],
  "is_submittable": 1,
- "modified": "2022-05-08 12:04:49.635383",
+ "modified": "2022-05-08 15:11:33.521769",
  "modified_by": "Administrator",
  "module": "Contracting",
  "name": "Tender",

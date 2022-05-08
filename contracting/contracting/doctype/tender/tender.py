@@ -46,6 +46,7 @@ class Tender(Document):
         comparison.expenses_insurances = self.expenses_insurances
         comparison.payed_in_clearance_insurances = self.payed_in_clearance_insurances
         comparison.delevery_insurance_value_rate_= self.insurances_on_deleviery
+        comparison.insurances_on_deleviery = self.delevery_insurance_amount
         #comparison.expenses_insurances = self.expenses_insurances
         comparison.flags.ignore_mandatory = 1
         comparison.save()
@@ -71,7 +72,8 @@ class Tender(Document):
                 self.total_insurance = float(self.total_insurance or 0) + float(line.amount or 0)
                 # frappe.throw(str(self.total_insurance))
                 if line.type_of_insurance == "For a Specified Period" :
-                    self.insurances_on_deleviery  += float(line.amount or 0)
+                    self.insurances_on_deleviery    = float(self.insurances_on_deleviery or 0) + float(line.precent or 0)
+                    self.delevery_insurance_amount  = float(self.delevery_insurance_amount or 0) + float(line.amount or 0)
                 if line.type_of_insurance == "Expenses" :
                      self.expenses_insurances  += float(line.amount)
                 if line.type_of_insurance == "Payed in Clearance" :
