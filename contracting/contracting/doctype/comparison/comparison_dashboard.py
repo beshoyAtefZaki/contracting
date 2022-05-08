@@ -13,12 +13,13 @@ def get_data():
 			'Purchase Order':'comparison',
 			'Comparison Item Card':'comparison',
 			'Journal Entry': 'reference_name',
+			'Bank Guarantee':'reference_docname',
 		},
 
 		'transactions': [
 			{
 				'label': _('Selling'),
-				'items': ['Tender', 'Clearance', 'Sales Order']
+				'items': ['Tender', 'Clearance', 'Sales Order','Bank Guarantee']
 			},
 			{
 				'label': _('Purchasing'),

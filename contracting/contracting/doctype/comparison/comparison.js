@@ -58,19 +58,19 @@ frappe.ui.form.on("Comparison", {
                 },
                 __("Create")
             );
-            if (frm.doc.insurance_payment == 0) {
-                frm.add_custom_button(
-                    __("Insurance Payment"),
-                    function() {
-                        //frm.events.make_purchase_order(frm);
-                        frappe.call({
-                            method: "create_insurance_payment",
-                            doc: frm.doc
-                        })
-                    },
-                    __("Create")
-                );
-            }
+            //if (frm.doc.insurance_payment == 0) {
+            frm.add_custom_button(
+                __("Insurance Payment"),
+                function() {
+                    //frm.events.make_purchase_order(frm);
+                    frappe.call({
+                        method: "create_insurance_payment",
+                        doc: frm.doc
+                    })
+                },
+                __("Create")
+            );
+            // }
         }
         if (frm.doc.docstatus == 0) {
             frm.add_custom_button(

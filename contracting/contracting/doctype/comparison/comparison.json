@@ -122,10 +122,12 @@
    "allow_on_submit": 1,
    "fieldname": "insurance_value_rate",
    "fieldtype": "Percent",
-   "label": "Insurance value Rate(%)",
+   "hidden": 1,
+   "label": "Payed in Clearance insurances",
    "read_only": 1
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "delevery_insurance_value_rate_",
    "fieldtype": "Percent",
    "label": "Delevery Insurance value Rate (%)",
@@ -357,7 +359,7 @@
   }
  ],
  "is_submittable": 1,
- "modified": "2022-05-08 11:17:23.681278",
+ "modified": "2022-05-08 12:58:19.736057",
  "modified_by": "Administrator",
  "module": "Contracting",
  "name": "Comparison",

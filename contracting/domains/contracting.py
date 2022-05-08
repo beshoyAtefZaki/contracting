@@ -454,7 +454,16 @@ data = {
                 "label": "Against Item Name",
             }
         ],
-
+        # 'Bank Guarantee':
+        # [
+        #     {
+        #         "fieldname": "comparison",
+        #         "fieldtype": "Link",
+        #         "insert_after": "amended_from",
+        #         "label": "Comparison",
+        #         "options": "Comparison"
+        #     }
+        # ],
         'Bank Account':
         [   
             {
@@ -496,7 +505,8 @@ data = {
                 "insert_after": "income_bank_grantee_cost_account",
                 "label": "Outcome bank grantee Cost Account",
             },
-        ]
+        ],
+       
 
 
 

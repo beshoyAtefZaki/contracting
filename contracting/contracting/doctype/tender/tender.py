@@ -29,6 +29,7 @@ class Tender(Document):
     def on_submit(self):
         self.validate_status()
         self.set_insurance_value_to_comparison()
+        self.validate_terms_sheet()
         if self.terms_paid and self.terms_sheet_amount > 0 and self.current_status == "Approved":
             self.create_terms_journal_entries()
         #""" 
@@ -44,6 +45,8 @@ class Tender(Document):
         comparison.insurances_on_deleviery = self.insurances_on_deleviery
         comparison.expenses_insurances = self.expenses_insurances
         comparison.payed_in_clearance_insurances = self.payed_in_clearance_insurances
+        comparison.delevery_insurance_value_rate_= self.insurances_on_deleviery
+        #comparison.expenses_insurances = self.expenses_insurances
         comparison.flags.ignore_mandatory = 1
         comparison.save()
         
@@ -136,6 +139,25 @@ class Tender(Document):
         total_percent = sum([x.percent for x in self.states_template])
         if total_percent != 100:
             frappe.throw(_("Total States Percent Must be 100%"))
+
+
+
+    def validate_terms_sheet(self):
+        if self.terms_sheet_amount > 0 and self.terms_paid ==0:
+            frappe.throw(_("You Must Pay Terms Sheet Amount"))
+
+    # def calc_insurance_values(self):
+    #     insurance_value_rate = 0
+    #     delevery_insurance_value_rate = 0
+    #     payed_in_clearance_insurances = 0
+    #     for item in self.insurances:
+    #         if item.type_of_insurance == "Payed in Clearance":
+    #             payed_in_clearance_insurances += item.amount
+
+    #         elif item.type_of_insurance == "For a Specified Period":
+    #             pass
+    #         elif item.type_of_insurance == "Expenses":
+    #             pass
 
     @frappe.whitelist()
     def insert(self, ignore_permissions=None, ignore_links=None, ignore_if_duplicate=False, ignore_mandatory=None, set_name=None, set_child_names=True):

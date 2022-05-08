@@ -33,7 +33,7 @@ class Comparison(Document):
 		self.total_cost_amount = 0 
 		if self.item :
 			for item in self.item :
-				item.total_item_cost = float(item.qty) * float(item.item_cost)
+				item.total_item_cost = float(item.qty or 0) * float(item.item_cost or 0)
 				self.total_cost_amount += item.total_item_cost
 
 	def validate(self):
@@ -101,54 +101,65 @@ class Comparison(Document):
 		from datetime import timedelta, date
 		company = frappe.get_doc('Company',self.company)
 
-		current_date = date.today() + timedelta(days=5)
+		
 
 		for item in self.insurances:
-			if item.type_of_insurance == 'For a Specified Period':
-				if item.pay_method == 'Cash':
-					je = self.create_journal_entry(
-						debit_account = company.insurance_account_for_others_from_us,
-						credit_account = company.default_cash_account,
-						amount = item.amount,
-						company_name = company.name
-					)
-					lnk = get_link_to_form(je.doctype, je.name)
-					je.docstatus = 1
-					je.save()
-					frappe.msgprint("Journal Entry '%s' Created Successfully"%lnk)
+			current_date = date.today() + timedelta(days = item.vaidation_days )
+			if not item.invocied:
+				if item.type_of_insurance == 'For a Specified Period':
+					if item.pay_method == 'Cash':
+						je = self.create_journal_entry(
+							debit_account = company.insurance_account_for_others_from_us,
+							credit_account = company.default_cash_account,
+							amount = item.amount,
+							company_name = company.name
+						)
+						lnk = get_link_to_form(je.doctype, je.name)
+						je.docstatus = 1
+						je.save()
+						frappe.msgprint("Journal Entry '%s' Created Successfully"%lnk)
 
-					je2 = self.create_journal_entry(
-						debit_account  = company.default_cash_account,
-						credit_account = company.insurance_account_for_others_from_us ,
-						amount = item.amount,
-						company_name = company.name,
-						posting_date = current_date
-					)
-					lnk2 = get_link_to_form(je.doctype, je2.name)
-					self.insurance_payment = 1
-					self.save()
-					frappe.msgprint("Journal Entry '%s' Created Successfully"%lnk2)
-	
-				elif item.pay_method == 'Bank Guarantee':
-					#try:
-						doc = frappe.new_doc("Bank Guarantee")
-						doc.bg_type  = 'Receiving'
-						doc.reference_doctype = "Sales Order"
-						doc.start_date = date.today()
-						doc.end_date  = current_date
-						doc.customer = self.customer
-						doc.amount = item.amount
-						doc.bank  = item.bank
-						doc.bank_account = item.account
-						doc.save()
-						# doc.docstatus =1
-						# doc.save()
-						self.insurance_payment = 1
+						je2 = self.create_journal_entry(
+							debit_account  = company.default_cash_account,
+							credit_account = company.insurance_account_for_others_from_us ,
+							amount = item.amount,
+							company_name = company.name,
+							posting_date = current_date
+						)
+						lnk2 = get_link_to_form(je.doctype, je2.name)
+						item.invocied = 1
+						item.save()
+						#self.insurance_payment = 1
 						self.save()
-						lnk3 = get_link_to_form(doc.doctype, doc.name)
-						frappe.msgprint("Bank Guarantee '%s' Created Successfully"%lnk3)
-					# except Exception as ex:
-					# 	print("error ======> ",str(ex))
+						frappe.msgprint("Journal Entry '%s' Created Successfully"%lnk2)
+		
+					elif item.pay_method == 'Bank Guarantee':
+						#try:
+							doc = frappe.new_doc("Bank Guarantee")
+							doc.bg_type  = 'Receiving'
+							#doc.reference_doctype = "Sales Order"
+							doc.start_date = date.today()
+							doc.end_date  = current_date
+							doc.customer = self.customer
+							doc.amount = item.amount
+							doc.bank  = item.bank
+							doc.bank_account = item.account
+							doc.validity = item.vaidation_days
+							doc.margin_money = item.amount
+							doc.reference_doctype = "Comparison"
+							doc.reference_docname = self.name
+							doc.save()
+							item.bank_guarantee = doc.name
+							item.invocied = 1
+							item.save()
+							# doc.docstatus =1
+							# doc.save()
+							#self.insurance_payment = 1
+							self.save()
+							lnk3 = get_link_to_form(doc.doctype, doc.name)
+							frappe.msgprint("Bank Guarantee '%s' Created Successfully"%lnk3)
+						# except Exception as ex:
+						# 	print("error ======> ",str(ex))
 
 	def create_journal_entry(self,debit_account=None,credit_account=None,party_type=None,party=None,amount=0,company_name=None,posting_date=nowdate()):
 		je = frappe.new_doc("Journal Entry")
@@ -176,6 +187,7 @@ class Comparison(Document):
 
 		#lnk = get_link_to_form(je.doctype, je.name)
 		return je
+
 
 @frappe.whitelist()
 def get_item_price(item_code):
