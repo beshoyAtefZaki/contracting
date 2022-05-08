@@ -28,6 +28,7 @@ class Tender(Document):
 
     def on_submit(self):
         self.validate_status()
+        self.set_insurance_value_to_comparison()
         if self.terms_paid and self.terms_sheet_amount > 0 and self.current_status == "Approved":
             self.create_terms_journal_entries()
         #""" 
@@ -37,7 +38,15 @@ class Tender(Document):
         #     self.create_risk_insurance_journal_entries()
         # if self.insurance_amount > 0 and self.current_status == "Approved":
         #     self.create_insurance_journal_entries()
-   
+
+    def set_insurance_value_to_comparison(self):
+        comparison = frappe.get_doc("Comparison",self.comparison)
+        comparison.insurances_on_deleviery = self.insurances_on_deleviery
+        comparison.expenses_insurances = self.expenses_insurances
+        comparison.payed_in_clearance_insurances = self.payed_in_clearance_insurances
+        comparison.flags.ignore_mandatory = 1
+        comparison.save()
+        
     def validate_incurance_details(self):
         self.total_insurance = 0
         if self.insurances :

@@ -51,7 +51,8 @@
   "insurance_value",
   "total_insurance",
   "total_cost_amount",
-  "amended_from"
+  "amended_from",
+  "insurance_payment"
  ],
  "fields": [
   {
@@ -326,26 +327,37 @@
    "read_only": 1
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "insurances_on_deleviery",
    "fieldtype": "Currency",
    "label": "Insurances On Deleviery",
    "read_only": 1
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "expenses_insurances",
    "fieldtype": "Currency",
    "label": "Expenses Insurances",
    "read_only": 1
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "payed_in_clearance_insurances",
    "fieldtype": "Currency",
    "label": "Payed In Clearance Insurances",
    "read_only": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "default": "0",
+   "fieldname": "insurance_payment",
+   "fieldtype": "Check",
+   "label": "Insurance Payment",
+   "read_only": 1
   }
  ],
  "is_submittable": 1,
- "modified": "2022-04-27 11:32:43.459114",
+ "modified": "2022-05-08 11:17:23.681278",
  "modified_by": "Administrator",
  "module": "Contracting",
  "name": "Comparison",

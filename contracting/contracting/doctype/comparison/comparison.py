@@ -125,6 +125,8 @@ class Comparison(Document):
 						posting_date = current_date
 					)
 					lnk2 = get_link_to_form(je.doctype, je2.name)
+					self.insurance_payment = 1
+					self.save()
 					frappe.msgprint("Journal Entry '%s' Created Successfully"%lnk2)
 	
 				elif item.pay_method == 'Bank Guarantee':
@@ -141,6 +143,8 @@ class Comparison(Document):
 						doc.save()
 						# doc.docstatus =1
 						# doc.save()
+						self.insurance_payment = 1
+						self.save()
 						lnk3 = get_link_to_form(doc.doctype, doc.name)
 						frappe.msgprint("Bank Guarantee '%s' Created Successfully"%lnk3)
 					# except Exception as ex:
