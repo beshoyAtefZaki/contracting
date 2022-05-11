@@ -4,6 +4,7 @@ from frappe.model.mapper import get_mapped_doc
 @frappe.whitelist()
 def add_sales_order_script():
 	add_properties()
+	return
 	try :
 		name = "Purchase Order-Form"
 		if frappe.db.exists("Client Script",name) :
