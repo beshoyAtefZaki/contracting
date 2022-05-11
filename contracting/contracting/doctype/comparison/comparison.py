@@ -96,7 +96,7 @@ class Comparison(Document):
 		return items
 
 
-	#@frappe.whitelist()
+	@frappe.whitelist()
 	def create_insurance_payment(self,*args,**kwargs):
 		from datetime import timedelta, date
 		company = frappe.get_doc('Company',self.company)
@@ -329,7 +329,6 @@ def make_purchase_order(source_name, selected_items=None, target_doc=None , igno
 	
 	}, target_doc, set_missing_values)
 
-	set_delivery_date(doc.items, source_name)
 
 	return doc
 

@@ -85,10 +85,34 @@ app_license = "MIT"
 # 	"ToDo": "custom_app.overrides.CustomToDo"
 # }
 
+
+
+
+doctype_js = {
+	"Purchase Order" : "public/js/purchase_order.js" ,
+	"Sales Order" : "public/js/sales_order.js" ,
+	"Stock Entry" : "public/js/stock_entry.js"
+}
+
+
+
+
+
+
 # Document Events
 # ---------------
 # Hook on document methods and events
-
+doc_events = {
+		"Stock Entry" : {
+			"on_submit": "contracting.contracting.doctype.stock_entry.stock_entry.on_submit"
+		} ,
+		"Sales Order" : {
+			"validate": "contracting.contracting.doctype.stock_entry.stock_entry.update_project_cost"
+		} ,
+		"Purchase Order": {
+		"on_submit": "contracting.contracting.doctype.purchase_order.purchase_order.update_comparison",
+		"on_cancel": "contracting.contracting.doctype.purchase_order.purchase_order.update_comparison",}
+}
 # doc_events = {
 # 	"*": {
 # 		"on_update": "method",
