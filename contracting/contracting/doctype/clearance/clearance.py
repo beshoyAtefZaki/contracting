@@ -3,6 +3,7 @@
 
 from re import template
 from shutil import ignore_patterns
+from contracting.contracting.doctype.comparison_item_log.comparison_item_log import get_last_comparison_item_log
 from erpnext.accounts.doctype.account.account import get_account_currency
 from erpnext.accounts.party import get_party_account
 import frappe
@@ -33,7 +34,40 @@ class Clearance(Document):
 
 	def on_cancel(self):
 		self.update_purchase_order(cancel=1)
+		if self.is_grand_clearance :
+			self.cancel_sub_clearances()
 
+	def save(self):
+		super(Clearance,self).save()
+		if self.is_grand_clearance :
+			self.cancel_sub_clearances()
+			self.update_sub_clearances()
+
+
+
+	def update_sub_clearances(self):
+		if self.is_grand_clearance :
+			clearnce_str = ",".join([f"'{x.clearance}'" for x in self.sub_clearance_details])
+			sql = f"""
+			update tabClearance set is_sub_clearance = 1 , grand_clearance = '{self.name}'
+			where name in ({clearnce_str}) and docstatus=1
+			"""
+			# frappe.msgprint(sql)
+			frappe.db.sql(sql)
+			frappe.db.commit()
+	
+
+	def cancel_sub_clearances(self):
+		if self.is_grand_clearance :
+			sql = f"""
+			update tabClearance set is_sub_clearance = 0 , grand_clearance =''
+			where grand_clearance ='{self.name}'
+			"""
+			frappe.db.sql(sql)
+			frappe.db.commit()
+
+
+		
 	# def update_comparison(self):
 	#     if self.comparison and self.items and self.clearance_type == "Outcoming":
 	#         doc = frappe.get_doc("Comparison", self.comparison)
@@ -75,7 +109,7 @@ class Clearance(Document):
 
 
 	def update_comparison_tender(self):
-		if self.comparison and self.items and self.clearance_type == "Outcoming":
+		if self.comparison and self.items and self.clearance_type == "Outcoming" and not getattr(self,'is_grand_clearance'):
 			doc = frappe.get_doc("Comparison", self.comparison)
 			tender_doc = None
 			if doc.tender :
@@ -85,8 +119,11 @@ class Clearance(Document):
 					if clearence_item.clearance_item == comparison_item.clearance_item:
 						result = get_item_price(self.comparison,clearence_item.clearance_item,clearence_item.clearance_state,clearence_item.current_qty) or {}
 						state_percent = result.get("state_percent") or 100
+
 						completed_percent = state_percent  * (clearence_item.current_qty or 0) /( comparison_item.qty or 1)
 						completed_amount = clearence_item.total_price
+						# frappe.msgprint(str(state_percent))
+						# frappe.throw(str(completed_percent))
 
 						comparison_item.previous_percent = completed_percent
 						comparison_item.previous_amount = completed_amount
@@ -96,10 +133,10 @@ class Clearance(Document):
 
 
 
-						comparison_item.remaining_percent = 100- completed_percent 
-						comparison_item.remaining_amount = (comparison_item.total_price or 0) - completed_amount
+						comparison_item.remaining_percent = 100- comparison_item.completed_percent 
+						comparison_item.remaining_amount = (comparison_item.total_price or 0) - comparison_item.completed_amount
 
-
+						
 
 						log = frappe.new_doc("Comparison Item Log")
 						log.posting_date = now_datetime()
@@ -115,6 +152,33 @@ class Clearance(Document):
 						log.reference_type = self.doctype
 						log.reference_name = self.name
 						log.submit()
+
+
+
+						clearence_item.previous_percent = log.previous_percent
+						clearence_item.previous_amount = log.previous_percent
+						clearence_item.previous_qty = log.pervious_qty
+
+
+
+
+
+
+						clearence_item.completed_percent = log.completed_percent
+						clearence_item.completed_amount = log.completed_amount
+						clearence_item.completed_qty = log.completed_qty
+
+
+
+
+
+						clearence_item.remaining_percent = log.remaining_percent
+						clearence_item.remaining_amount = log.remaining_percent
+						clearence_item.remaining_qty = log.remaining_qty
+
+
+
+
 					# if tender_doc :
 						# for tamplate_item in tender_doc.states_template or [] :
 							# if tamplate_item.state == clearence_item.clearance_state:
@@ -128,6 +192,7 @@ class Clearance(Document):
 					
 						
 			self.save()
+
 			doc.save()
 			if tender_doc :
 				tender_doc.save()
@@ -408,7 +473,7 @@ def clearance_make_sales_invoice(source_name, target_doc=None):
             x for x in invoice.items if x.item_code == row.clearance_item]
         if len(invoice_item) > 0:
             invoice_item = invoice_item[0]
-            invoice_item.qty = row.current_qty
+            invoice_item.qty = row.current_qty * (row.current_percent /100)
     try:
         invoice.save(ignore_permissions=1)
     except Exception as e:
@@ -416,6 +481,109 @@ def clearance_make_sales_invoice(source_name, target_doc=None):
     # doc.purchase_invoice = pi.name
     # doc.save()
     return invoice
+
+
+
+@frappe.whitelist()
+def create_grand_clearance(source_name, target_doc=None, ignore_permissions=False):
+	comparison_name = frappe.db.get_value("Sales Order",source_name,"comparison")
+	comparison = frappe.get_doc("Comparison",comparison_name)
+	sql = f"""
+		select name from tabClearance tc 
+		where name not in (select clearance from `tabSales Invoice` si where si.docstatus < 2 and IFNULL(si.clearance,'')<>'')
+				and tc.docstatus =1  and clearance_type = 'Outcoming' 
+				and is_sub_clearance <> 1
+				and is_grand_clearance <> 1
+				and comparison = '{comparison.name}'
+	"""
+	un_invoiced_clearance = frappe.db.sql_list(sql) or []
+	if not len(un_invoiced_clearance):
+		frappe.throw(_("There is no uninvoiced Clearance"))
+	
+	clearance_str = ",".join(f"'{x}'"for x in un_invoiced_clearance )
+	clearance_items_sql = f"""
+			select clearance_item ,clearance_state,state_percent, clearance_item_name , clearance_item_description , cost_center , uom
+					, qty ,price, SUM(current_qty) as current_qty , SUM(total_price) as total_price 
+			from `tabClearance Items` item 
+			where parent in ({clearance_str})
+			GROUP BY clearance_item  ,clearance_state
+	"""
+	clearance_items = frappe.db.sql(clearance_items_sql,as_dict=1) or []
+	
+	if not len(clearance_items):
+		frappe.throw(_("There is no uninvoiced Clearance Items")) 
+
+	clearance = frappe.new_doc("Clearance")
+	clearance.company = comparison.company
+	clearance.comparison = comparison.name
+	clearance.project = comparison.project
+	clearance.tender = comparison.tender
+	clearance.purchase_taxes_and_charges_template = comparison.purchase_taxes_and_charges_template
+	clearance.is_grand_clearance = 1
+	clearance.clearance_date = nowdate()
+	clearance.clearance_type = "Outcoming"
+	clearance.set("items",[])
+	clearance.set("item_tax",[])
+	clearance.set("sub_clearance_details",[])
+	clearance.sales_order = source_name
+	for item_row in clearance_items :
+		last_log = get_last_comparison_item_log(comparison.name,item_row.clearance_item,item_row.clearance_state )
+		clearance.append("items",{
+			"clearance_item":item_row.clearance_item,
+			"clearance_state":item_row.clearance_state,
+			"state_percent":item_row.state_percent,
+			"clearance_item_name":item_row.clearance_item_name,
+			"clearance_item_description":item_row.clearance_item_description,
+			"cost_center":item_row.cost_center,
+			"uom":item_row.uom,
+			"qty":item_row.qty,
+			"price":item_row.price,
+			"current_qty":item_row.current_qty,
+			"total_price":item_row.total_price,
+			"current_price" : (item_row.total_price or 0) / (item_row.current_qty or 1),
+			"current_percent" : 0 if not last_log else last_log.completed_percent,
+			"current_amount" : 0 if not last_log else last_log.completed_amount,
+			"previous_qty" : 0 if not last_log else last_log.previous_qty,
+			"previous_percent" : 0 if not last_log else last_log.previous_percent,
+			"previous_amount" : 0 if not last_log else last_log.previous_amount,
+			"completed_qty" : 0 if not last_log else last_log.completed_qty,
+			"completed_percent" : 0 if not last_log else last_log.completed_percent,
+			"completed_amount" : 0 if not last_log else last_log.completed_amount,
+			"remaining_qty" : 0 if not last_log else last_log.remaining_qty,
+			"remaining_percent" : 0 if not last_log else last_log.remaining_percent,
+			"remaining_amount" : 0 if not last_log else last_log.remaining_amount,
+			
+		})
+
+	for tax_row in comparison.taxes :
+		clearance.append("item_tax",{
+			"category":tax_row.category,
+			"add_deduct_tax":tax_row.add_deduct_tax,
+			"charge_type":tax_row.charge_type,
+			"row_id":tax_row.row_id,
+			"included_in_print_rate":tax_row.included_in_print_rate,
+			"included_in_paid_amount":tax_row.included_in_paid_amount,
+			"account_head":tax_row.account_head,
+			"description":tax_row.description,
+			"rate":tax_row.rate,
+			"cost_center":tax_row.cost_center,
+			"account_currency":tax_row.account_currency,
+			"tax_amount":tax_row.tax_amount,
+			"tax_amount_after_discount_amount":tax_row.tax_amount_after_discount_amount,
+			"total":tax_row.total,
+			"base_tax_amount":tax_row.base_tax_amount,
+			"base_total":tax_row.base_total,
+			"base_tax_amount_after_discount_amount":tax_row.base_tax_amount_after_discount_amount,
+			"item_wise_tax_detail":tax_row.item_wise_tax_detail 
+		})
+
+	for row in un_invoiced_clearance :
+		clearance.append("sub_clearance_details",{
+			"clearance":row
+		})
+
+	
+	return clearance
 
 
 # def make_purchase_invoice(source_name, target_doc=None):

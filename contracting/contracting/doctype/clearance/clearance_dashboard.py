@@ -8,6 +8,7 @@ def get_data():
 		'fieldname': 'clearance',
 		'non_standard_fieldnames': {
 			'Journal Entry': 'reference_name',
+			'Comparison Item Log': 'reference_name',
 		},
 
 		'transactions': [
@@ -22,6 +23,10 @@ def get_data():
 			{
 				'label': _('Journal Entry'),
 				'items': ['Journal Entry']
+			},
+			{
+				'label': _('Transactions'),
+				'items': ['Comparison Item Log']
 			},
 		]
 	}

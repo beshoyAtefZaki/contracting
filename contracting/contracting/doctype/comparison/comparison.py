@@ -1,6 +1,7 @@
 # Copyright (c) 2021, Dynamic and contributors
 # For license information, please see license.txt
 
+from contracting.contracting.doctype.comparison_item_log.comparison_item_log import get_last_comparison_item_log
 from contracting.contracting.doctype.sales_order.sales_order import set_delivery_date
 from erpnext import get_default_company, get_default_cost_center
 from contracting.contracting.doctype.sales_order.sales_order import is_product_bundle
@@ -95,7 +96,7 @@ class Comparison(Document):
 				))
 		return items
 
-
+	
 	@frappe.whitelist()
 	def create_insurance_payment(self,*args,**kwargs):
 		from datetime import timedelta, date
@@ -359,6 +360,4 @@ def create_item_cart(items,comparison,tender=None):
 					item.comparison_item_card = n.get("item_cart")
 		c_doc.save()
 	return True
-
-
 

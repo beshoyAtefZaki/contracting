@@ -326,7 +326,7 @@ class Tender(Document):
                 doc.docstatus = 1
                 doc.delivery_insurance_value =self.insurances_on_deleviery
                 doc.insurance_value = self.payed_in_clearance_insurances
-                doc.total_insurance = float(doc.delivery_insurance_value) + float(doc.total_insurance)
+                doc.total_insurance = float(doc.delivery_insurance_value or 0) + float(doc.total_insurance or 0)
                 doc.tender = self.name
                 doc.tender_status = self.current_status
                 doc.save(ignore_permissions=True)

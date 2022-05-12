@@ -7,13 +7,26 @@ frappe.ui.form.on("Sales Order", {
         },
       };
     });
-    if (frm.doc.docstatus == 1) {
-      frm.add_custom_button(__("create Clearence"), function () {
+    if (frm.doc.docstatus == 1 && frm.doc.comparison) {
+      frm.add_custom_button(__("Clearence"), function () {
         frappe.model.open_mapped_doc({
           method: "contracting.contracting.add_client_Sccript.make_clearence",
           frm: frm, //this.frm
         });
-      });
+      }, __("Create"));
+      frm.add_custom_button(
+        __("Grand Clearance"),
+        function () {
+
+          frappe.model.open_mapped_doc({
+            method:
+              "contracting.contracting.doctype.clearance.clearance.create_grand_clearance",
+            frm: frm,
+          });
+          //frm.events.make_purchase_order(frm);
+        },
+        __("Create")
+      );
     }
   },
   onload: function (frm) {
