@@ -47,13 +47,13 @@ frappe.ui.form.on("Tender", {
     refresh: function(frm) {
 
         frm.events.set_mandatory_fields(frm)
-        frm.add_custom_button(
-            __("Insurance Payments"),
-            function() {
-                console.log("Fan")
-            },
+        // frm.add_custom_button(
+        //     __("Insurance Payments"),
+        //     function() {
+        //         console.log("Fan")
+        //     },
 
-            __("Create"))
+        //     __("Create"))
 
         frm.set_query("comparison", function(doc) {
             return {

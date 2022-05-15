@@ -298,6 +298,7 @@ class Tender(Document):
                 doc = frappe.get_doc("Comparison", self.comparison)
                 doc.tender= self.name
                 total_insurances = 0
+                doc.set("insurances",[])
                 for insurance in self.insurances :
                     insure = doc.append("insurances" , {})
                     insure.incurance_detail    = insurance.incurance_detail

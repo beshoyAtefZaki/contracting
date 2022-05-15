@@ -124,13 +124,13 @@ doc_events = {
 # Scheduled Tasks
 # ---------------
 
-# scheduler_events = {
+scheduler_events = {
 # 	"all": [
 # 		"contracting.tasks.all"
 # 	],
-# 	"daily": [
-# 		"contracting.tasks.daily"
-# 	],
+	"daily": [
+		"contracting.contracting.doctype.comparison.comparison.get_returnable_insurance"
+	],
 # 	"hourly": [
 # 		"contracting.tasks.hourly"
 # 	],
@@ -140,7 +140,7 @@ doc_events = {
 # 	"monthly": [
 # 		"contracting.tasks.monthly"
 # 	]
-# }
+}
 
 # Testing
 # -------

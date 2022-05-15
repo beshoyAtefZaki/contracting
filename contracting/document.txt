@@ -1,0 +1,18 @@
+1- Create Draft Comparison
+2- each comparison has one tender with status Approved
+    and has insurances and states of comparison
+
+3- insurances has 3 type 
+    * for a specified Period => is paid from comparison and returned after validation days
+    * Expenses => is payable but not returnable
+    * Payed in Clearance
+
+
+4- in tender you can add terms paid sheet paid amount and paid it in draft state
+
+
+5-  incoming Clearance => create Purchase Order => Clearance
+6-  Outcoming Clearance => create Sales Order => Clearance => Sales Invoice with Percent of Complete Percent
+7-  Outcoming clearance update Completed Percent in every time with state precent 
+
+

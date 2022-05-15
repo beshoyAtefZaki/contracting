@@ -11,7 +11,7 @@ from frappe.model.document import Document
 from frappe.model.mapper import get_mapped_doc
 import json
 from frappe import _
-
+import dateutil
 from frappe.utils.data import flt, get_link_to_form, nowdate
 from erpnext.accounts.doctype.sales_invoice.sales_invoice import get_bank_cash_account
 from six import string_types
@@ -101,13 +101,10 @@ class Comparison(Document):
 	def create_insurance_payment(self,*args,**kwargs):
 		from datetime import timedelta, date
 		company = frappe.get_doc('Company',self.company)
-
-		
-
 		for item in self.insurances:
 			current_date = date.today() + timedelta(days = item.vaidation_days )
 			if not item.invocied:
-				if item.type_of_insurance == 'For a Specified Period':
+				if item.type_of_insurance in ['For a Specified Period' , 'Expenses']:
 					if item.pay_method == 'Cash':
 						je = self.create_journal_entry(
 							debit_account = company.insurance_account_for_others_from_us,
@@ -119,26 +116,26 @@ class Comparison(Document):
 							company_name = company.name
 						)
 						lnk = get_link_to_form(je.doctype, je.name)
-						je.docstatus = 1
-						je.save()
+						# je.docstatus = 1
+						je.submit()
 						frappe.msgprint("Journal Entry '%s' Created Successfully"%lnk)
 
-						je2 = self.create_journal_entry(
-							debit_account  = company.default_cash_account,
-							credit_account = company.insurance_account_for_others_from_us ,
-							amount = item.amount,
-							company_name = company.name,
-							posting_date = current_date,
-							party_type="Customer",
-							party=self.customer,
-							credit_party = True,
-						)
-						lnk2 = get_link_to_form(je.doctype, je2.name)
+						# je2 = self.create_journal_entry(
+						# 	debit_account  = company.default_cash_account,
+						# 	credit_account = company.insurance_account_for_others_from_us ,
+						# 	amount = item.amount,
+						# 	company_name = company.name,
+						# 	posting_date = current_date,
+						# 	party_type="Customer",
+						# 	party=self.customer,
+						# 	credit_party = True,
+						# )
+						# lnk2 = get_link_to_form(je.doctype, je2.name)
 						item.invocied = 1
 						item.save()
 						#self.insurance_payment = 1
 						self.save()
-						frappe.msgprint("Journal Entry '%s' Created Successfully"%lnk2)
+						# frappe.msgprint("Journal Entry '%s' Created Successfully"%lnk2)
 		
 					elif item.pay_method == 'Bank Guarantee':
 						#try:
@@ -167,6 +164,84 @@ class Comparison(Document):
 							frappe.msgprint("Bank Guarantee '%s' Created Successfully"%lnk3)
 						# except Exception as ex:
 						# 	print("error ======> ",str(ex))
+
+
+	
+	@frappe.whitelist()
+	def create_insurance_return(self,*args,**kwargs):
+		from datetime import timedelta, date
+		company = frappe.get_doc('Company',self.company)
+		for item in self.insurances:
+			from_date = dateutil.parser.parse(str(self.start_date)).date()
+			current_date = from_date + timedelta(days = item.vaidation_days )
+			if not item.returned  and item.invocied:
+				if item.type_of_insurance in ['For a Specified Period'] and current_date <= date.today():
+					if item.pay_method == 'Cash':
+						je = self.create_journal_entry(
+							debit_account =  company.default_cash_account,
+							credit_account = company.insurance_account_for_others_from_us,
+							amount = item.amount,
+							party_type="Customer",
+							party=self.customer,
+							debit_party = False,
+							company_name = company.name
+						)
+						lnk = get_link_to_form(je.doctype, je.name)
+						je.docstatus = 1
+						je.save()
+						frappe.msgprint("Journal Entry '%s' Created Successfully"%lnk)
+
+						# je2 = self.create_journal_entry(
+						# 	debit_account  = company.default_cash_account,
+						# 	credit_account = company.insurance_account_for_others_from_us ,
+						# 	amount = item.amount,
+						# 	company_name = company.name,
+						# 	posting_date = current_date,
+						# 	party_type="Customer",
+						# 	party=self.customer,
+						# 	credit_party = True,
+						# )
+						# lnk2 = get_link_to_form(je.doctype, je2.name)
+						item.returned = 1
+						item.save()
+						#self.insurance_payment = 1
+						self.save()
+						# frappe.msgprint("Journal Entry '%s' Created Successfully"%lnk2)
+		
+					# elif item.pay_method == 'Bank Guarantee':
+					# 	#try:
+					# 		doc = frappe.new_doc("Bank Guarantee")
+					# 		doc.bg_type  = 'Receiving'
+					# 		#doc.reference_doctype = "Sales Order"
+					# 		doc.start_date = date.today()
+					# 		doc.end_date  = current_date
+					# 		doc.customer = self.customer
+					# 		doc.amount = item.amount
+					# 		doc.bank  = item.bank
+					# 		doc.bank_account = item.account
+					# 		doc.validity = item.vaidation_days
+					# 		doc.margin_money = item.amount
+					# 		doc.reference_doctype = "Comparison"
+					# 		doc.reference_docname = self.name
+					# 		doc.save()
+					# 		item.bank_guarantee = doc.name
+					# 		item.invocied = 1
+					# 		item.save()
+					# 		# doc.docstatus =1
+					# 		# doc.save()
+					# 		#self.insurance_payment = 1
+					# 		self.save()
+					# 		lnk3 = get_link_to_form(doc.doctype, doc.name)
+					# 		frappe.msgprint("Bank Guarantee '%s' Created Successfully"%lnk3)
+					# 	# except Exception as ex:
+					# 	# 	print("error ======> ",str(ex))
+
+
+
+
+
+
+
 
 	def create_journal_entry(self,debit_account=None,
 							credit_account=None,
@@ -360,4 +435,37 @@ def create_item_cart(items,comparison,tender=None):
 					item.comparison_item_card = n.get("item_cart")
 		c_doc.save()
 	return True
+
+
+
+
+
+
+
+
+@frappe.whitelist()
+def get_returnable_insurance():
+	sql = f"""
+		select comp.name from tabComparison comp
+		inner join `tabTender Incurance` item on item.parent = comp.parent 
+		where comp.docstatus = 1 and item.invocied =1 and item.returned <> 1 
+		and item.type_of_insurance = 'For a Specified Period'
+		and DATE_ADD(comp.start_date , INTERVAL item.vaidation_days DAY) <= CURDATE()
+	"""
+	docs = frappe.db.sql_list(sql) or []
+	for docname in docs :
+		doc = frappe.get_doc("Comparison",docname)
+		doc.create_insurance_return()
+
+
+
+
+
+
+
+
+
+
+
+
 

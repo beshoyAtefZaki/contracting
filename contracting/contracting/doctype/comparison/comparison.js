@@ -61,17 +61,60 @@ frappe.ui.form.on("Comparison", {
         __("Create")
       );
       //if (frm.doc.insurance_payment == 0) {
-      frm.add_custom_button(
-        __("Insurance Payment"),
-        function () {
-          //frm.events.make_purchase_order(frm);
-          frappe.call({
-            method: "create_insurance_payment",
-            doc: frm.doc,
-          });
-        },
-        __("Create")
+
+      let can_create = frm.doc.insurances.some(
+        (item) =>
+          !item.invocied &&
+          !item.returned &&
+          ["For a Specified Period", "Expenses"].includes(
+            item.type_of_insurance
+          )
       );
+
+      if (can_create) {
+        frm.add_custom_button(
+          __("Insurance Payment"),
+          function () {
+            //frm.events.make_purchase_order(frm);
+            frappe.call({
+              method: "create_insurance_payment",
+              doc: frm.doc,
+            });
+          },
+          __("Create")
+        );
+      }
+
+      let can_return = frm.doc.insurances.some(
+        (item) =>
+          item.invocied &&
+          !item.returned &&
+          ["For a Specified Period"].includes(item.type_of_insurance)
+      );
+      if (can_return) {
+        frm.add_custom_button(
+          __("Insurance Return"),
+          function () {
+            //frm.events.make_purchase_order(frm);
+            frappe.call({
+              method: "create_insurance_return",
+              doc: frm.doc,
+            });
+          },
+          __("Create")
+        );
+      }
+      // frm.add_custom_button(
+      //   __("Insurance Return2"),
+      //   function () {
+      //     //frm.events.make_purchase_order(frm);
+      //     frappe.call({
+      //       method: "contracting.contracting.doctype.comparison.comparison.get_returnable_insurance",
+      //     });
+      //   },
+      //   __("Create")
+      // );
+      
       // }
     }
     if (frm.doc.docstatus == 0) {
@@ -183,10 +226,9 @@ frappe.ui.form.on("Comparison", {
       });
     }
     let pending_list = (frm.doc.item || []).filter((item) => {
-        let pending_qty = flt(item.qty) - flt(item.purchased_qty || 0);
-        return pending_qty > 0;
-      });
-
+      let pending_qty = flt(item.qty) - flt(item.purchased_qty || 0);
+      return pending_qty > 0;
+    });
 
     var dialog = new frappe.ui.Dialog({
       title: __("Select Items"),
