@@ -44,6 +44,35 @@ class Clearance(Document):
 			self.update_sub_clearances()
 
 
+	# def validate(self):
+	# 	self.get_comparison_insurance()
+
+	@frappe.whitelist()
+	def get_comparison_insurance(self) :
+		self.total_insurances = 0
+		if getattr(self,'comparison'):
+			comparison = frappe.get_doc("Comparison",self.comparison)
+			insurances = [x for x in (comparison.insurances or []) if x.type_of_insurance == "Payed in Clearance" and x.pay_method == "Cash" ]
+			self.set("insurances",[])
+			# frappe.msgprint(str(len(insurances)))
+			for item in insurances:
+				row = self.append("insurances",{})
+				row.incurance_detail = item.incurance_detail
+				row.type_of_insurance = item.type_of_insurance
+				row.pay_method = item.pay_method
+				row.precent = item.precent
+				row.amount = ((item.precent or 0)/100) * self.grand_total or 0
+				row.vaidation_days = item.vaidation_days
+				row.payed_from_account = item.payed_from_account
+				row.cost_center = item.cost_center
+				row.bank_guarantee = item.bank_guarantee
+				row.bank = item.bank
+
+
+				self.total_insurances += row.amount
+
+
+			
 
 	def update_sub_clearances(self):
 		if self.is_grand_clearance :
@@ -65,6 +94,97 @@ class Clearance(Document):
 			"""
 			frappe.db.sql(sql)
 			frappe.db.commit()
+
+	@frappe.whitelist()
+	def create_insurance_payment(self,*args,**kwargs):
+		from datetime import timedelta, date
+		company = frappe.get_doc('Company',self.company)
+		for item in self.insurances:
+			if not item.invocied:
+					if item.pay_method == 'Cash':
+						je = self.create_journal_entry(
+							debit_account = item.insurance_account , #company.insurance_account_for_others_from_us,
+							credit_account = company.default_receivable_account,
+							amount = item.amount,
+							party_type="Customer",
+							party=self.customer,
+							credit_party = True,
+							company_name = company.name
+						)
+						lnk = get_link_to_form(je.doctype, je.name)
+						# je.docstatus = 1
+						je.submit()
+						frappe.msgprint("Journal Entry '%s' Created Successfully"%lnk)
+
+						item.invocied = 1
+						item.save()
+						self.save()
+		
+	@frappe.whitelist()
+	def create_insurance_return(self,*args,**kwargs):
+		from datetime import timedelta, date
+		company = frappe.get_doc('Company',self.company)
+		for item in self.insurances:
+			if not item.returned  and item.invocied:
+					if item.pay_method == 'Cash':
+						je = self.create_journal_entry(
+							debit_account = company.default_receivable_account , #company.insurance_account_for_others_from_us,
+							credit_account = item.insurance_account,
+							amount = item.amount,
+							party_type="Customer",
+							party=self.customer,
+							debit_party = True,
+							company_name = company.name
+						)
+						lnk = get_link_to_form(je.doctype, je.name)
+						# je.docstatus = 1
+						je.submit()
+						frappe.msgprint("Journal Entry '%s' Created Successfully"%lnk)
+
+						item.returned = 1
+						item.save()
+						self.save()
+											
+	@frappe.whitelist()
+	def create_journal_entry(self,debit_account=None,
+							credit_account=None,
+							party_type=None,
+							party=None,
+							debit_party  = False,
+							credit_party = False,
+							amount=0,
+							company_name=None,
+							posting_date=nowdate()):
+
+		je = frappe.new_doc("Journal Entry")
+		je.posting_date = posting_date
+		je.voucher_type = 'Journal Entry'
+		je.company = company_name
+		#je.remark = f'Journal Entry against Insurance for {self.doctype} : {self.name}'
+
+		###credit
+		je.append("accounts", {
+			"account": credit_account,
+			"credit_in_account_currency": flt(amount),
+			"reference_type": self.doctype,
+			"party":party if credit_party else None,
+			"party_type":party_type if credit_party else None,
+			"reference_name": self.name,
+			"project": self.project,
+		})
+		## debit
+		je.append("accounts", {
+			"account":   debit_account,
+			"debit_in_account_currency": flt(amount),
+			"reference_type": self.doctype,
+			"party":party if debit_party else None,
+			"party_type":party_type if debit_party else None,
+			"reference_name": self.name
+		})
+		je.save()
+
+		#lnk = get_link_to_form(je.doctype, je.name)
+		return je
 
 
 		

@@ -5,7 +5,11 @@
 3- insurances has 3 type 
     * for a specified Period => is paid from comparison and returned after validation days
     * Expenses => is payable but not returnable
-    * Payed in Clearance
+    * Payed in Clearance => will be paid in clearance after create sales invoice 
+        from account debitors on to insurance account 
+        must be cash
+
+        can be returned after insurance Payment
 
 
 4- in tender you can add terms paid sheet paid amount and paid it in draft state

@@ -45,6 +45,15 @@ frappe.ui.form.on("Clearance", {
         ],
       };
     });
+    frm.set_query("account", "insurances", function () {
+      return {
+        filters: [
+          ["company", "=", frm.doc.company],
+          ["is_group", "=", 0],
+          ["root_type", "=", "Asset"],
+        ],
+      };
+    });
 
     frm.set_query("cost_center", "deductions", function () {
       return {
@@ -65,6 +74,22 @@ frappe.ui.form.on("Clearance", {
     });
   },
   refresh: (frm) => {
+    if (frm.doc.docstatus == 0 && frm.doc.insurances.length == 0) {
+      frm.add_custom_button(
+        __("Check Insurance"),
+        function () {
+          frm.call({
+            method: "get_comparison_insurance",
+            doc: frm.doc,
+            callback: function (r) {
+              frm.refresh_field("insurances");
+              frm.refresh_field("total_insurances");
+            },
+          });
+        },
+        __("Actions")
+      );
+    }
     if (frm.doc.docstatus == 1) {
       if (!frm.doc.paid) {
         frm.add_custom_button(
@@ -119,6 +144,43 @@ frappe.ui.form.on("Clearance", {
                     method:
                       "contracting.contracting.doctype.clearance.clearance.clearance_make_sales_invoice",
                     frm: frm,
+                  });
+                },
+                __("Create")
+              );
+            } else if (
+              frm.doc.insurances.filter((x) => !x.invocied).length > 0
+            ) {
+              frm.add_custom_button(
+                __("Insurance Payment"),
+                function () {
+                  //frm.events.make_purchase_order(frm);
+                  frappe.call({
+                    method: "create_insurance_payment",
+                    doc: frm.doc,
+                    callback: function (frm) {
+                      frm.refresh_field("insurances");
+                      frm.refresh();
+                    },
+                  });
+                },
+                __("Create")
+              );
+            } else if (
+              frm.doc.insurances.filter((x) => x.invocied && !x.returned)
+                .length > 0
+            ) {
+              frm.add_custom_button(
+                __("Insurance Return"),
+                function () {
+                  //frm.events.make_purchase_order(frm);
+                  frappe.call({
+                    method: "create_insurance_return",
+                    doc: frm.doc,
+                    callback: function (frm) {
+                      frm.refresh_field("insurances");
+                      frm.refresh();
+                    },
                   });
                 },
                 __("Create")
