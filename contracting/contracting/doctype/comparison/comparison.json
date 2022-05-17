@@ -1,4 +1,5 @@
 {
+ "_liked_by": "[\"Administrator\"]",
  "allow_rename": 1,
  "autoname": "format:COM-{DD}-{MM}-{YY}-{####}",
  "creation": "2021-11-21 17:56:12.664139",
@@ -233,6 +234,7 @@
    "read_only": 1
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "tax_total",
    "fieldtype": "Currency",
    "label": "Tax Total",
@@ -366,7 +368,7 @@
   }
  ],
  "is_submittable": 1,
- "modified": "2022-05-08 15:25:08.674779",
+ "modified": "2022-05-17 16:25:52.917755",
  "modified_by": "Administrator",
  "module": "Contracting",
  "name": "Comparison",
