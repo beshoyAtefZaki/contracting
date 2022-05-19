@@ -194,6 +194,8 @@ frappe.ui.form.on("Clearance", {
   onload(frm) {
     if (frm.is_new()) {
       (frm.doc.items || []).forEach((row) => {
+        frm.events.get_item_price(frm, row.doctype, row.name);
+
         frm.events.calc_total(frm, row.doctype, row.name);
       });
       frm.events.clac_taxes(frm);
@@ -361,7 +363,7 @@ frappe.ui.form.on("Clearance", {
       (frm.doc.payment_of_insurance_copy_of_operation_and_initial_delivery /
         100);
 
-    frm.refresh_fields("item_tax");
+    frm.refresh_field("item_tax");
     frm.set_value("total_qty", parseFloat(total_qty));
     frm.set_value(
       "total_price",

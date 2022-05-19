@@ -16,6 +16,7 @@
   "clearance_date",
   "clearance_type",
   "comparison",
+  "task",
   "column_break_6",
   "the_total_value_of_the_work_statement_of_the_current_extract",
   "down_payment_insurance_amount",
@@ -323,6 +324,7 @@
    "fieldtype": "Column Break"
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "tax_total",
    "fieldtype": "Currency",
    "label": "Tax Total",
@@ -404,10 +406,17 @@
    "fieldtype": "Currency",
    "label": "Total Insurances",
    "read_only": 1
+  },
+  {
+   "fieldname": "task",
+   "fieldtype": "Link",
+   "label": "Task",
+   "options": "Task",
+   "read_only": 1
   }
  ],
  "is_submittable": 1,
- "modified": "2022-05-16 09:52:18.878454",
+ "modified": "2022-05-19 09:35:16.321554",
  "modified_by": "Administrator",
  "module": "Contracting",
  "name": "Clearance",

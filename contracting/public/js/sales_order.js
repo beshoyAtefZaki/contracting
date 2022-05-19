@@ -8,26 +8,41 @@ frappe.ui.form.on("Sales Order", {
       };
     });
     if (frm.doc.docstatus == 1 && frm.doc.comparison) {
-      frm.add_custom_button(__("Clearence"), function () {
-        frappe.model.open_mapped_doc({
-          method: "contracting.contracting.add_client_Sccript.make_clearence",
-          frm: frm, //this.frm
-        });
-      }, __("Create"));
       frm.add_custom_button(
-        __("Grand Clearance"),
+        __("Tasks"),
         function () {
-
           frappe.model.open_mapped_doc({
             method:
-              "contracting.contracting.doctype.clearance.clearance.create_grand_clearance",
-            frm: frm,
+              "contracting.contracting.doctype.task.task.create_tasks_from_sales_order",
+            frm: frm, //this.frm
           });
-          //frm.events.make_purchase_order(frm);
         },
         __("Create")
       );
     }
+    frm.add_custom_button(
+      __("Clearence"),
+      function () {
+        frappe.model.open_mapped_doc({
+          method: "contracting.contracting.add_client_Sccript.make_clearence",
+          frm: frm, //this.frm
+        });
+      },
+      __("Create")
+    );
+
+    frm.add_custom_button(
+      __("Grand Clearance"),
+      function () {
+        frappe.model.open_mapped_doc({
+          method:
+            "contracting.contracting.doctype.clearance.clearance.create_grand_clearance",
+          frm: frm,
+        });
+        //frm.events.make_purchase_order(frm);
+      },
+      __("Create")
+    );
   },
   onload: function (frm) {
     console.log("over Write ");

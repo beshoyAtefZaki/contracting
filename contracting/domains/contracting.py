@@ -399,7 +399,56 @@ data = {
 
         ],
 
+        "Task":[
 
+            {
+                "fieldname": "comparison_section",
+                "fieldtype": "Section Break",
+                "insert_after": "company",
+                "label": "Comparison"
+
+            },
+            {
+                "fieldname": "sales_order",
+                "fieldtype": "Link",
+                "insert_after": "comparison_section",
+                "label": "Sales Order",
+                "options": "Sales Order"
+            },
+            {
+                "fieldname": "comparison",
+                "fieldtype": "Link",
+                "insert_after": "sales_order",
+                "label": "Comparison",
+                "options": "Comparison",
+                "fetch_if_empty":1,
+                "fetch_from":"sales_order.comparison"
+            },
+            {
+                "fieldname": "tender",
+                "fieldtype": "Link",
+                "insert_after": "comparison",
+                "label": "Tender",
+                "options": "Tender",
+                "read_only":1,
+                "fetch_from":"comparison.tender"
+            },
+            # {
+            #     "fieldname": "clearance",
+            #     "fieldtype": "Link",
+            #     "insert_after": "tender",
+            #     "label": "Clearance",
+            #     "options": "Clearance",
+            #     "read_only":1,
+            # },
+            {
+                "fieldname": "items",
+                "fieldtype": "Table",
+                "insert_after": "clearance",
+                "label": "Items",
+                "options": "Task Items"
+            },
+        ],
 
         'Stock Entry':
         [
