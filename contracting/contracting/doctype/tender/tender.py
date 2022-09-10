@@ -55,6 +55,7 @@ class Tender(Document):
         self.total_insurance = 0
         if self.insurances :
             self.insurances_on_deleviery = 0
+            self.delevery_insurance_amount = 0
             self.expenses_insurances =0 
             self.payed_in_clearance_insurances = 0 
             for line in self.insurances :
