@@ -582,25 +582,27 @@ def clearance_make_purchase_invoice(source_name, target_doc=None):
 
 @frappe.whitelist()
 def clearance_make_sales_invoice(source_name, target_doc=None):
-    doc = frappe.get_doc("Clearance", source_name)
-    invoice = make_sales_invoice(doc.sales_order)
-    invoice.set_missing_values()
-    invoice.is_contracting = 1
-    invoice.clearance = doc.name
-    invoice.comparison = doc.comparison
-    for row in doc.items:
-        invoice_item = [
-            x for x in invoice.items if x.item_code == row.clearance_item]
-        if len(invoice_item) > 0:
-            invoice_item = invoice_item[0]
-            invoice_item.qty = row.current_qty * (row.current_percent /100)
-    try:
-        invoice.save(ignore_permissions=1)
-    except Exception as e:
-        frappe.throw(str(e))
-    # doc.purchase_invoice = pi.name
-    # doc.save()
-    return invoice
+	doc = frappe.get_doc("Clearance", source_name)
+	invoice = make_sales_invoice(doc.sales_order)
+	invoice.set_missing_values()
+	invoice.is_contracting = 1
+	invoice.clearance = doc.name
+	invoice.comparison = doc.comparison
+	for row in doc.items:
+		invoice_item = [
+			x for x in invoice.items if x.item_code == row.clearance_item]
+		if len(invoice_item) > 0:
+			invoice_item = invoice_item[0]
+			# invoice_item.qty = row.current_qty * (row.current_percent /100)
+			invoice_item.qty = row.current_qty * (row.state_percent /100)
+
+	try:
+		invoice.save(ignore_permissions=1)
+	except Exception as e:
+		frappe.throw(str(e))
+	# doc.purchase_invoice = pi.name
+	# doc.save()
+	return invoice
 
 
 

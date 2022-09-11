@@ -74,7 +74,12 @@ frappe.ui.form.on("Clearance", {
     });
   },
   refresh: (frm) => {
-    if (frm.doc.docstatus == 0 && frm.doc.insurances.length == 0) {
+    frm.fields_dict["insurances"].grid.wrapper.find(".grid-add-row").hide();
+    if (
+      frm.doc.docstatus == 0 &&
+      frm.doc.insurances &&
+      frm.doc.insurances.length == 0
+    ) {
       frm.add_custom_button(
         __("Check Insurance"),
         function () {
