@@ -210,6 +210,16 @@ frappe.ui.form.on("Comparison", {
         },
         __("Create")
       );
+      frm.add_custom_button(
+        __("Make Quotation"),
+        function () {
+          frappe.model.open_mapped_doc({
+            method: "contracting.contract_api.create_quotation",
+            frm: frm, 
+          });
+        },
+        __("Create")
+      );
     }
   },
 
