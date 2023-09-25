@@ -9,7 +9,7 @@ import frappe
 import frappe.utils
 from frappe import _
 from frappe.contacts.doctype.address.address import get_company_address
-from frappe.desk.notifications import clear_doctype_notifications
+from frappe.desk.notifications import clear_doctype_notifications 
 from frappe.model.mapper import get_mapped_doc
 from frappe.model.utils import get_fetch_values
 from frappe.utils import add_days, cint, cstr, flt, get_link_to_form, getdate, nowdate, strip_html
