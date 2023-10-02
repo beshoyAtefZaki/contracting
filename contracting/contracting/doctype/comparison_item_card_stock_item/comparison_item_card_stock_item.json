@@ -14,7 +14,8 @@
   "qty",
   "unit_price",
   "column_break_8",
-  "total_amount"
+  "total_amount",
+  "reference_item"
  ],
  "fields": [
   {
@@ -69,12 +70,19 @@
    "in_list_view": 1,
    "label": "Total Amount",
    "read_only": 1
+  },
+  {
+   "fieldname": "reference_item",
+   "fieldtype": "Link",
+   "label": "Reference Item",
+   "options": "Item",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2021-12-05 16:06:38.689000",
+ "modified": "2023-10-01 13:54:44.385390",
  "modified_by": "Administrator",
  "module": "Contracting",
  "name": "Comparison Item Card Stock Item",

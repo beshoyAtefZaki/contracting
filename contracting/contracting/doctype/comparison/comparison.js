@@ -41,6 +41,7 @@ frappe.ui.form.on("Comparison", {
   },
   refresh: (frm) => {
     if (frm.doc.docstatus == 1) {
+      frm.events.add_custom_btn_event(frm)
       frm.add_custom_button(
         __("Sales Order"),
         function () {
@@ -104,18 +105,6 @@ frappe.ui.form.on("Comparison", {
           __("Create")
         );
       }
-      // frm.add_custom_button(
-      //   __("Insurance Return2"),
-      //   function () {
-      //     //frm.events.make_purchase_order(frm);
-      //     frappe.call({
-      //       method: "contracting.contracting.doctype.comparison.comparison.get_returnable_insurance",
-      //     });
-      //   },
-      //   __("Create")
-      // );
-      
-      // }
     }
     if (frm.doc.docstatus == 0) {
       frm.add_custom_button(
@@ -210,17 +199,31 @@ frappe.ui.form.on("Comparison", {
         },
         __("Create")
       );
-      frm.add_custom_button(
-        __("Make Quotation"),
-        function () {
-          frappe.model.open_mapped_doc({
-            method: "contracting.contract_api.create_quotation",
-            frm: frm, 
-          });
-        },
-        __("Create")
-      );
+      
     }
+    
+  },
+  add_custom_btn_event:function(frm){
+    frm.add_custom_button(
+      __("Make Quotation"),
+      function () {
+        frappe.model.open_mapped_doc({
+          method: "contracting.contract_api.create_quotation",
+          frm: frm, 
+        });
+      },
+      __("Create")
+    );
+    // frm.add_custom_button(
+    //   __("Make Clearance"),
+    //   function () {
+    //     frappe.model.open_mapped_doc({
+    //       method: "",
+    //       frm: frm, 
+    //     });
+    //   },
+    //   __("Create")
+    // );
   },
 
   make_purchase_order: function (frm) {

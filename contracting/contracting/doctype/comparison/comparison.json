@@ -1,5 +1,5 @@
 {
- "_liked_by": "[\"Administrator\"]",
+ "actions": [],
  "allow_rename": 1,
  "autoname": "format:COM-{DD}-{MM}-{YY}-{####}",
  "creation": "2021-11-21 17:56:12.664139",
@@ -9,12 +9,12 @@
  "field_order": [
   "comparison_type",
   "company",
-  "project",
   "tender",
   "tender_status",
   "column_break_2",
   "customer",
   "customer_name",
+  "project",
   "contractor",
   "contractor_name",
   "allow_material_over_price",
@@ -54,7 +54,9 @@
   "total_insurance",
   "total_cost_amount",
   "amended_from",
-  "insurance_payment"
+  "insurance_payment",
+  "section_break_nm2ja",
+  "notes"
  ],
  "fields": [
   {
@@ -212,8 +214,7 @@
    "fieldname": "project",
    "fieldtype": "Link",
    "label": "Project",
-   "options": "Project",
-   "read_only": 1
+   "options": "Project"
   },
   {
    "fieldname": "totals_section",
@@ -365,10 +366,20 @@
    "fieldname": "delevery_insurance_amount",
    "fieldtype": "Read Only",
    "label": "Delevery Insurance Amount"
+  },
+  {
+   "fieldname": "notes",
+   "fieldtype": "Small Text",
+   "label": "Notes"
+  },
+  {
+   "fieldname": "section_break_nm2ja",
+   "fieldtype": "Section Break"
   }
  ],
  "is_submittable": 1,
- "modified": "2022-05-17 16:25:52.917755",
+ "links": [],
+ "modified": "2023-10-01 13:26:31.224847",
  "modified_by": "Administrator",
  "module": "Contracting",
  "name": "Comparison",
