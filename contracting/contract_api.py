@@ -115,12 +115,12 @@ def create_quotation(source_name, target_doc=None, ignore_permissions=True):
 						'reference_item':row.clearance_item,
 					})
 			if item_card_doc.services:
-				for item in item_card_doc.services:
+				for serv in item_card_doc.services:
 					docs.append('card_services',{
-						'item_code':item.get("item_code"),
-						'item_name':item.get("item_name"),
-						'qty':item.get('qty'),
-						'uom':item.get("uom"),
+						'item_code':serv.get("item_code"),
+						'item_name':serv.get("item_name"),
+						'qty':serv.get('qty'),
+						'uom':serv.get("uom"),
 						'reference_item':row.clearance_item,
 					})
 	return docs
