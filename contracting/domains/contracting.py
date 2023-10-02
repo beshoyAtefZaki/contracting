@@ -5,6 +5,14 @@ data = {
     {
         'Quotation':[
             {
+                "label":_("Project"),
+                "fieldname":"project",
+                "fieldtype":"Link",
+                "options":"Project",
+                "insert_after":"items_section", 
+                "no_copy":1, 
+            },
+            {
                 "label":_(""),
                 "fieldname":"card_items_sect",
                 "fieldtype":"Section Break",
