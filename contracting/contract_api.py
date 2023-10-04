@@ -30,6 +30,8 @@ def create_comparision(source_name, target_doc=None, ignore_permissions=True):
 					"rate": "price",
 					"amount": "total_price",
 					"cost_center": "cost_center",
+					"build": "build",
+
 				},
 			},
 			"Sales Taxes and Charges": {
@@ -76,6 +78,7 @@ def create_quotation(source_name, target_doc=None, ignore_permissions=True):
 					"price":"rate",
 					"total_price":"amount",
 					"cost_center": "cost_center",
+					"build": "build",
 				},
 			},
 			"Purchase Taxes and Charges Clearances": {
