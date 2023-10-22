@@ -41,18 +41,21 @@ def stock_entry_setup(comparison , *args ,**kwargs):
 def get_comparision_items(comparison,item_code):
     data = frappe.db.sql(
     f"""SELECT `tabComparison Item Card Stock Item`.item as item_code
-,`tabComparison Item Card Stock Item`.item_name
-,`tabComparison Item Card Stock Item`.uom
-,`tabComparison Item Card Stock Item`.qty
-,`tabUOM Conversion Detail`.conversion_factor
-  FROM  `tabComparison Item Card`
- INNER JOIN `tabComparison Item Card Stock Item`
- ON `tabComparison Item Card Stock Item`.parent=`tabComparison Item Card`.name
- LEFT JOIN `tabUOM Conversion Detail`
- ON `tabUOM Conversion Detail`.parent=`tabComparison Item Card Stock Item`.item 
- AND `tabUOM Conversion Detail`.uom=`tabComparison Item Card Stock Item`.uom
-WHERE `tabComparison Item Card`.item_code='{item_code}' AND `tabComparison Item Card`.comparison='{comparison}'
+    ,`tabComparison Item Card Stock Item`.item_name
+    ,`tabComparison Item Card Stock Item`.uom
+    ,`tabComparison Item Card Stock Item`.qty
+    ,`tabComparison Item Card Stock Item`.unit_price
+    ,(if(`tabUOM Conversion Detail`.conversion_factor,null,1)or 1) as conversion_factor
+    FROM  `tabComparison Item Card`
+    INNER JOIN `tabComparison Item Card Stock Item`
+    ON `tabComparison Item Card Stock Item`.parent=`tabComparison Item Card`.name
+    LEFT JOIN `tabUOM Conversion Detail`
+    ON `tabUOM Conversion Detail`.parent=`tabComparison Item Card Stock Item`.item 
+    AND `tabUOM Conversion Detail`.uom=`tabComparison Item Card Stock Item`.uom
+    WHERE `tabComparison Item Card`.item_code='{item_code}' AND `tabComparison Item Card`.comparison='{comparison}'
+    AND `tabComparison Item Card`.docstatus=1 
                          """,as_dict=1)
-    # print(f'\n\n\n--->{data}\n\n')
     return data or []
+
+
 
