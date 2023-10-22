@@ -42,6 +42,8 @@
   "tax_section",
   "purchase_taxes_and_charges_template",
   "taxes",
+  "section_break_5vi8w",
+  "clearance_states",
   "totals_section",
   "total_qty",
   "total_price",
@@ -375,11 +377,21 @@
   {
    "fieldname": "section_break_nm2ja",
    "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "section_break_5vi8w",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "clearance_states",
+   "fieldtype": "Table",
+   "label": "Clearance States ",
+   "options": "Tender States Template"
   }
  ],
  "is_submittable": 1,
  "links": [],
- "modified": "2023-10-01 13:26:31.224847",
+ "modified": "2023-10-19 09:37:52.377536",
  "modified_by": "Administrator",
  "module": "Contracting",
  "name": "Comparison",

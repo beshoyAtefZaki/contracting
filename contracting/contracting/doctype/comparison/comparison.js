@@ -706,3 +706,17 @@ frappe.ui.form.on("Purchase Taxes and Charges Clearances", {
     });
   },
 });
+
+
+
+frappe.form.link_formatters['Project'] = function(value, doc) {
+	// console.log('5555555')
+	console.log(`value==>${value}--doc-${doc}`)
+	if (doc && value && doc.customer ) {
+		return value + ': ' + doc.customer;
+	} 
+	else {
+		// if value is blank in report view or item code and name are the same, return as is
+		return value;
+	}
+}

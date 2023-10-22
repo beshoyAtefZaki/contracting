@@ -511,7 +511,7 @@ data = {
                 "fieldname": "against_comparison",
                 "fieldtype": "Check",
                 "insert_after": "stock_entry_type",
-                "depends_on": "eval:doc.stock_entry_type=='Material Issue'",
+                "depends_on": "eval:doc.stock_entry_type == 'Material Transfer' || doc.stock_entry_type == 'Material Issue' ",
                 "label": "Against Comparison",
 
             },
