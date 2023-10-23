@@ -95,10 +95,10 @@ frappe.ui.form.on("Stock Entry", {
               let row = frm.add_child('items', {
                 item_code: element.item_code,
                 item_name: element.item_name,
-                qty: element.qty,
+                qty: element.total_qty,
                 uom: element.uom,
                 stock_uom: element.uom,
-                transfer_qty: element.qty * element.conversion_factor,
+                transfer_qty: element.total_qty * element.conversion_factor,
                 conversion_factor: element.conversion_factor,
                 basic_rate: element.unit_price,
                 
