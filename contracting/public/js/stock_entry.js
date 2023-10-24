@@ -1,7 +1,5 @@
 frappe.ui.form.on("Stock Entry", {
   refresh(frm) {
-    // your code here
-
     frm.events.set_child_table_fields(frm);
     frm.events.comparison(frm);
   },
@@ -10,7 +8,6 @@ frappe.ui.form.on("Stock Entry", {
       method:
         "contracting.contracting.doctype.stock_functions.fetch_contracting_data",
       callback: function (r) {
-        console.log(r);
         if (r.message) {
         }
       },
@@ -79,7 +76,38 @@ frappe.ui.form.on("Stock Entry", {
       };
     });
   },
-
+  stock_entry_type : function (frm){
+    frm.events.filter_stock_entry_transfer(frm)
+    frm.events.set_property_domain(frm)
+    // frm.events.set_field_property(frm)
+  },
+  set_property_domain:function(frm){
+      frappe.call({
+        method: "dynamic.api.get_active_domains",
+        callback: function (r) {
+            if (r.message && r.message.length) {
+                if (r.message.includes("Contracting")) {
+                  frappe.call({
+                    'method': 'frappe.client.get_value',
+                    'args': {
+                      'doctype': 'Stock Entry Type',
+                      'filters': {
+                        'name': frm.doc.stock_entry_type
+                      },
+                       'fieldname':'purpose'
+                    },
+                    'callback': function(res){
+                        frm.set_df_property("against_comparison", "hidden", !["Material Transfer", "Material Issue"].includes(res.message.purpose))
+                        frm.refresh_field("against_comparison")
+                    }
+                  });
+                  
+                }
+            }
+        }
+    })
+      
+    },
   comparison_item:function(frm){
     if(frm.doc.comparison_item){
       frappe.call({
