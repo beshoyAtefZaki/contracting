@@ -76,7 +76,7 @@ class Tender(Document):
                     self.insurances_on_deleviery    = float(self.insurances_on_deleviery or 0) + float(line.precent or 0)
                     self.delevery_insurance_amount  = float(self.delevery_insurance_amount or 0) + float(line.amount or 0)
                 if line.type_of_insurance == "Expenses" :
-                     self.expenses_insurances  += float(line.amount) or 0
+                     self.expenses_insurances  += float(line.amount or 0) 
                 if line.type_of_insurance == "Payed in Clearance" :
                     self.payed_in_clearance_insurances +=  float(line.amount or 0)
     def validate_comparison(self) :
