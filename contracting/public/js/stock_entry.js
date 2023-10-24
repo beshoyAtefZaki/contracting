@@ -97,7 +97,8 @@ frappe.ui.form.on("Stock Entry", {
                        'fieldname':'purpose'
                     },
                     'callback': function(res){
-                        frm.set_df_property("against_comparison", "hidden", !["Material Transfer", "Material Issue"].includes(res.message.purpose))
+                        frm.set_df_property("against_comparison", "hidden", !["Material Transfer", "Material Receipt","Material Issue"].includes(res.message.purpose))
+                        frm.set_value("against_comparison", ["Material Transfer", "Material Issue","Material Receipt"].includes(res.message.purpose))
                         frm.refresh_field("against_comparison")
                     }
                   });

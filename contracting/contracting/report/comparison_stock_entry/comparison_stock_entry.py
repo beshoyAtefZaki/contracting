@@ -115,7 +115,7 @@ def get_data(conditions, filters):
 	INNER JOIN `tabComparison Item`
 	ON `tabComparison`.name=`tabComparison Item`.parent AND `tabComparison Item`.clearance_item=`tabStock Entry`.comparison_item
 	WHERE `tabStock Entry`.comparison is not null
-	AND `tabStock Entry`.docstatus=0
+	AND `tabStock Entry`.docstatus=1
 	"""
 	data = frappe.db.sql(sql,as_dict=1)
 	result = []
