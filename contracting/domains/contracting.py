@@ -8,6 +8,28 @@ from frappe import _
 data = {
     'custom_fields':
     {
+        "Material Request":[
+            {
+                "fieldname": "comparison",
+                "fieldtype": "Link",
+                "insert_after": "status",
+                "options": "Comparison",
+                # "depends_on": "eval:doc.against_comparison == 1",
+                # "mandatory_depends_on": "eval:doc.against_comparison == 1",
+                "label": "Comparison",
+
+            },
+            {
+                "fieldname": "comparison_item",
+                "fieldtype": "Link",
+                "insert_after": "comparison",
+                "options": "Item",
+                # "depends_on": "eval:doc.against_comparison == 1",
+                # "mandatory_depends_on": "eval:doc.against_comparison == 1",
+                "label": "Comparison Item",
+
+            }
+        ],
         'Quotation':[
             {
                 "label":_("Project"),

@@ -25,6 +25,7 @@ def fetch_contracting_data(*args , **kwargs ):
 
 @frappe.whitelist()
 def stock_entry_setup(comparison , *args ,**kwargs):
+    print(f'\n\n\n------------------\n\n')
     data = frappe.db.sql(""" SELECT `tabItem`.item_code  FROM  `tabItem`
     inner Join
     `tabComparison Item` on `tabItem`.name = `tabComparison Item`.clearance_item
@@ -33,6 +34,7 @@ def stock_entry_setup(comparison , *args ,**kwargs):
     item_list = []
     for i in data :
         item_list.append(i[0])
+    print(f'\n\n\n{item_list}\n\n')
     return (item_list)
 
 

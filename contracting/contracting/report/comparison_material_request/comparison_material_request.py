@@ -17,17 +17,17 @@ def get_conditions(filters):
 	cond = "1=1 " 
 	if len(filters):
 		if filters.get('from_date'):
-			cond += " AND `tabStock Entry`.posting_date >= '%s' "%(filters.get('from_date'))
+			cond += " AND `tabMaterial Request`.transaction_date >= '%s' "%(filters.get('from_date'))
 		if filters.get('to_date'):
-			cond += " AND `tabStock Entry`.posting_date <= '%s' "%(filters.get('to_date'))
+			cond += " AND `tabMaterial Request`.transaction_date <= '%s' "%(filters.get('to_date'))
 		if filters.get('comparison'):
-			cond += " AND `tabStock Entry`.comparison = '%s' "%(filters.get('comparison'))
+			cond += " AND `tabMaterial Request`.comparison = '%s' "%(filters.get('comparison'))
 		if filters.get('from_warehouse'):
-			cond += " AND `tabStock Entry`.from_warehouse = '%s' "%(filters.get('from_warehouse'))
+			cond += " AND `tabMaterial Request`.from_warehouse = '%s' "%(filters.get('from_warehouse'))
 		if filters.get('to_warehouse'):
-			cond += " AND `tabStock Entry`.to_warehouse = '%s' "%(filters.get('to_warehouse'))
+			cond += " AND `tabMaterial Request`.to_warehouse = '%s' "%(filters.get('to_warehouse'))
 		if filters.get('stock_entry_type'):
-			cond += " AND `tabStock Entry`.stock_entry_type = '%s' "%(filters.get('stock_entry_type'))
+			cond += " AND `tabMaterial Request`.stock_entry_type = '%s' "%(filters.get('stock_entry_type'))
 		if filters.get('customer'):
 			cond += " AND `tabComparison`.customer = '%s' "%(filters.get('customer'))
 	return cond
@@ -37,10 +37,16 @@ def get_conditions(filters):
 def get_columns(filters):
 	columns = [
 		{
-			"label": _("Stock Entry"),
+			"label": _("Material Request"),
 			"fieldname": "stock_entry_name",
 			"fieldtype": "Link",
-			"options": "Stock Entry",
+			"options": "Material Request",
+			"width": 160,
+		},
+		{
+			"label": _("Material Request Type"),
+			"fieldname": "material_request_type",
+			"fieldtype": "Data",
 			"width": 160,
 		},
 		{
@@ -130,41 +136,49 @@ def get_columns(filters):
 			"options": "Warehouse",
 			"width": 160,
 		},
+		{
+			"label": _("Status"),
+			"fieldname": "status",
+			"fieldtype": "Data",
+			"width": 160,
+		},
 	]
 	return columns
 
 def get_data(conditions):
 	sql = f"""
-		select `tabStock Entry`.name as stock_entry_name_
-	,`tabStock Entry`.comparison
-	,`tabStock Entry`.comparison_item as main_item
-	,`tabStock Entry`.from_warehouse
-	,`tabStock Entry`.to_warehouse
-	,CONCAT(`tabStock Entry Detail`.item_code ,":",`tabStock Entry Detail`.item_name)as child_item
-	,(`tabStock Entry Detail`.qty / `tabComparison Item`.qty) as qty
+		select `tabMaterial Request`.name as matriala_request_name
+	,`tabMaterial Request`.comparison
+	,`tabMaterial Request`.status
+	,`tabMaterial Request`.material_request_type
+	,`tabMaterial Request`.comparison_item as main_item
+	,`tabMaterial Request`.set_from_warehouse as from_warehouse
+	,`tabMaterial Request`.set_warehouse as to_warehouse
+	,CONCAT(`tabMaterial Request Item`.item_code ,":",`tabMaterial Request Item`.item_name)as child_item
+	,(`tabMaterial Request Item`.qty / `tabComparison Item`.qty) as qty
 	,`tabComparison`.customer as cst
 	,`tabComparison Item`.clearance_item_name as main_item_name
 	,`tabComparison Item`.qty comparsion_qty
-	,(`tabStock Entry Detail`.qty ) as total_qty
-	,((`tabStock Entry Detail`.qty / `tabComparison Item`.qty) / (`tabStock Entry Detail`.qty )) as comp_percent
-	,((`tabStock Entry Detail`.qty ) - (`tabStock Entry Detail`.qty / `tabComparison Item`.qty)) as outstand_qty
-	,((`tabStock Entry Detail`.qty ) - (`tabStock Entry Detail`.qty / `tabComparison Item`.qty)) as Outstand_percent
-	FROM `tabStock Entry`
-	INNER JOIN `tabStock Entry Detail`
-	ON `tabStock Entry Detail`.parent=`tabStock Entry`.name
+	,(`tabMaterial Request Item`.qty ) as total_qty
+	,((`tabMaterial Request Item`.qty / `tabComparison Item`.qty) / (`tabMaterial Request Item`.qty )) as comp_percent
+	,((`tabMaterial Request Item`.qty ) - (`tabMaterial Request Item`.qty / `tabComparison Item`.qty)) as outstand_qty
+	,((`tabMaterial Request Item`.qty ) - (`tabMaterial Request Item`.qty / `tabComparison Item`.qty)) as Outstand_percent
+	FROM `tabMaterial Request`
+	INNER JOIN `tabMaterial Request Item`
+	ON `tabMaterial Request Item`.parent=`tabMaterial Request`.name
 	INNER JOIN `tabComparison`
-	ON `tabComparison`.name=`tabStock Entry`.comparison
+	ON `tabComparison`.name=`tabMaterial Request`.comparison
 	INNER JOIN `tabComparison Item`
 	ON `tabComparison`.name=`tabComparison Item`.parent 
-	AND `tabComparison Item`.clearance_item=`tabStock Entry`.comparison_item
-	WHERE `tabStock Entry`.comparison is not null
-	AND `tabStock Entry`.docstatus=1 AND {conditions}
-	ORDER BY `tabStock Entry`.name
+	AND `tabComparison Item`.clearance_item=`tabMaterial Request`.comparison_item
+	WHERE `tabMaterial Request`.comparison is not null
+	AND `tabMaterial Request`.docstatus=0 AND {conditions}
+	ORDER BY `tabMaterial Request`.name
 	"""
 	data = frappe.db.sql(sql,as_dict=1)
 	result = []
 	check_headers = []
-	key_func = lambda x: (x["main_item"], x["cst"],x['stock_entry_name_'],x['comparsion_qty']) 
+	key_func = lambda x: (x["main_item"], x["cst"],x['matriala_request_name'],x['comparsion_qty']) 
 	for key, group in itertools.groupby(data, key_func):
 		if key[2] not in check_headers: # stock entry not add before
 			head_row = {'main_item':key[0],'customer':key[1],'stock_entry_name':key[2],'qty':key[3],'header':True}

@@ -2,7 +2,7 @@
 // For license information, please see license.txt
 /* eslint-disable */
 
-frappe.query_reports["Comparison Stock Entry"] = {
+frappe.query_reports["Comparison Project  Cost"] = {
 	"filters": [
 		{
 			fieldname: "from_date",
@@ -26,29 +26,18 @@ frappe.query_reports["Comparison Stock Entry"] = {
 			// reqd: 1
 		},
 		{
-			fieldname: "from_warehouse",
-			label: __("From Warehouse"),
-			fieldtype: "Link",
-			options: "Warehouse",
-		},
-		{
-			fieldname: "to_warehouse",
-			label: __("To Warehouse"),
-			fieldtype: "Link",
-			options: "Warehouse",
-		},
-		{
 			fieldname: "customer",
 			label: __("Customer"),
 			fieldtype: "Link",
 			options: "Customer",
 		},
 		{
-			fieldname: "stock_entry_type",
-			label: __("Stock Entry Type"),
+			fieldname: "project",
+			label: __("Project"),
 			fieldtype: "Link",
-			options: "Stock Entry Type",
+			options: "Project",
 		},
+		
 
 	]
 };

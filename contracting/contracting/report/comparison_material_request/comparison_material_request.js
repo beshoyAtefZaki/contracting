@@ -2,7 +2,7 @@
 // For license information, please see license.txt
 /* eslint-disable */
 
-frappe.query_reports["Comparison Stock Entry"] = {
+frappe.query_reports["Comparison Material Request"] = {
 	"filters": [
 		{
 			fieldname: "from_date",
