@@ -73,6 +73,8 @@ def create_quotation(source_name, target_doc=None, ignore_permissions=True):
 				"doctype": "Quotation Item",
 				"field_map": {
 					"clearance_item":"item_code",
+					"clearance_item_name":"item_name",
+					"clearance_item_description":"description",
 					"uom": "uom",
 					"qty": "qty",
 					"price":"rate",

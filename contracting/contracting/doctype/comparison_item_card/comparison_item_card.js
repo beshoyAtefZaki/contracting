@@ -2,9 +2,25 @@
 // For license information, please see license.txt
 
 frappe.ui.form.on('Comparison Item Card', {
-	// refresh: function(frm) {
-
-	// }
+	setup: function(frm) {
+        frm.events.setup_quiries(frm)
+	},
+    setup_quiries:function(frm){
+        frm.set_query("item", "items", function () {
+            return {
+              filters: [
+                ["is_stock_item", "=", 1],
+              ],
+            };
+          });
+          frm.set_query("item_code", "services", function () {
+            return {
+              filters: [
+                ["is_stock_item", "=", 0],
+              ],
+            };
+          });
+    },
     qty:(frm,cdt,cdn)=>{
       let qty =frm.doc.qty
       if(qty > frm.doc.qty_from_comparison){
