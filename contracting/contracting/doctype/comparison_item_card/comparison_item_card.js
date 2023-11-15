@@ -2,9 +2,9 @@
 // For license information, please see license.txt
 
 frappe.ui.form.on('Comparison Item Card', {
-    // onload:function(frm){
-    //     // frm.ignore_doctypes_on_cancel_all = ['Comparison'];
-    // },
+    onload:function(frm){
+        frm.ignore_doctypes_on_cancel_all = ['Comparison'];
+    },
     // refresh:function(frm){
     // },
 	setup: function(frm) {
