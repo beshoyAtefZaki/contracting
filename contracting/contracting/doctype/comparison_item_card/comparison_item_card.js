@@ -73,10 +73,24 @@ frappe.ui.form.on('Comparison Item Card', {
         frm.set_value("total_item_cost",all_cost)
         frm.refresh_field("total_item_cost")
     }
+    
 });
 
 
 frappe.ui.form.on('Comparison Item Card Stock Item', {
+    item:(frm,cdt,cdn)=>{
+        let row = locals[cdt][cdn]
+        frm.call({
+            doc: frm.doc,
+            method: "get_item_details",
+            args: {"item" : row.item},
+            callback: function (r) {
+                row.uom= r.message.weight_uom
+                row.unit_price = r.message.valuation_rate
+                cur_frm.refresh_field("items");
+            },
+         });
+    },   
 	unit_price:(frm,cdt,cdn)=>{
         let row = locals[cdt][cdn]
         row.total_amount = (row.qty || 0 ) *  (row.unit_price || 0)
