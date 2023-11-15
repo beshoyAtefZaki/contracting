@@ -2,6 +2,10 @@
 // For license information, please see license.txt
 
 frappe.ui.form.on("Comparison", {
+//   onload:function(frm){
+//     frm.ignore_doctypes_on_cancel_all = [' Comparison Item Log'];
+//     // frm.ignore_doctypes_on_cancel_all = ['Comparison Item Card'];
+// },
   setup(frm) {
     frm.set_query("account_head", "taxes", function () {
       return {

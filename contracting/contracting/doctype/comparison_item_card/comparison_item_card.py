@@ -6,7 +6,15 @@ from frappe.model.document import Document
 
 class ComparisonItemCard(Document):
 
+	def on_cancel(self):
+		self.ignore_linked_doctypes = ("Comparison")
+		# self.db_set('docstatus',2) 
+		# frappe.db.set_value(doctype, docname, 'status', 'Cancelled')
+
 	def before_submit(self):
+		self.calcualte_profit()
+			# doc.save()
+	def calcualte_profit(self):
 		self.result = (self.total_item_cost / self.qty)
 		doc = frappe.get_doc("Comparison",self.comparison)
 		if bool(doc):
@@ -21,10 +29,11 @@ class ComparisonItemCard(Document):
 					item.db_set('item_cost',self.result)
 					item.db_set('price',self.result + float(self.margin_rate  or 0 ))
 					item.db_set('total_price',item.price * item.qty)
-			# doc.save()
 
 	def validate(self):
 		self.validate_qty()
+		self.calcualte_profit()
+		
 	def validate_qty(self):
 		if not self.qty:
 			self.qty = 1

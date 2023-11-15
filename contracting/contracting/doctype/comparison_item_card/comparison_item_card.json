@@ -213,13 +213,15 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2022-01-30 14:11:31.710201",
+ "modified": "2023-11-15 09:49:39.759928",
  "modified_by": "Administrator",
  "module": "Contracting",
  "name": "Comparison Item Card",
  "owner": "Administrator",
  "permissions": [
   {
+   "amend": 1,
+   "cancel": 1,
    "create": 1,
    "delete": 1,
    "email": 1,
@@ -229,6 +231,7 @@
    "report": 1,
    "role": "System Manager",
    "share": 1,
+   "submit": 1,
    "write": 1
   }
  ],
