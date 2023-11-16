@@ -40,11 +40,31 @@ data = {
                 "no_copy":1, 
             },
             {
-                "label":_(""),
-                "fieldname":"card_items_sect",
-                "fieldtype":"Section Break",
-                "insert_after":"total_net_weight", 
+                "fieldname": "colum_break_for_comarsion",
+                "fieldtype": "Column Break",
+                "insert_after": "project",
+
+            },
+            {
+                "label":_("Comparison"),
+                "fieldname":"comparison",
+                "fieldtype":"Link",
+                "options":"Comparison",
+                "insert_after":"colum_break_for_comarsion", 
                 "no_copy":1, 
+            },
+            {
+                "label":_("Quotation Section"),
+                "fieldname":"quotation_for_section",
+                "fieldtype":"Section Break",
+                "insert_after":"comparison", 
+                "collapsible": 1,
+            },
+            {
+                "label":_("Quotation For"),
+                "fieldname":"quotation_for",
+                "fieldtype":"Text Editor",
+                "insert_after":"quotation_for_section",  
             },
             {
                 "label":_("Card Items"),

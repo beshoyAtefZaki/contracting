@@ -145,7 +145,12 @@ scheduler_events = {
 # 		"contracting.tasks.monthly"
 # 	]
 }
-
+jenv = {
+    "methods": [
+        "get_comparison_item_cards:contracting.contract_api.get_comparison_item_cards",
+    ],
+    "filters": []
+}
 # Testing
 # -------
 
