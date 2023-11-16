@@ -8,8 +8,7 @@ class ComparisonItemCard(Document):
 
 	def on_cancel(self):
 		self.ignore_linked_doctypes = ("Comparison")
-		# self.db_set('docstatus',2) 
-		# frappe.db.set_value(doctype, docname, 'status', 'Cancelled')
+		
 
 	def before_submit(self):
 		self.calcualte_profit()

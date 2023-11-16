@@ -539,6 +539,18 @@ def get_state_query(doctype, txt, searchfield, start, page_len, filters):
 			'txt': "%%%s%%" % txt
 		})
 
+@frappe.whitelist()
+@frappe.validate_and_sanitize_search_inputs
+def comparsion_state_get_state_query(doctype, txt, searchfield, start, page_len, filters):
+	return frappe.db.sql("""select state from `tabTender States Template`
+		where parent = %(parent)s and state like %(txt)s
+		limit %(start)s, %(page_len)s""", {
+			'parent': filters.get("parent"),
+			'start': start,
+			'page_len': page_len,
+			'txt': "%%%s%%" % txt
+		})
+
 
 
 

@@ -8,7 +8,7 @@ from frappe import _
 def execute(filters=None):
 	columns = get_columns(filters) or []
 	conditions = get_conditions(filters) or []
-	data = get_data(conditions) or []
+	data = get_data(conditions,filters) or []
 	# print (f'\n\n\ndata====>{data}\n\n')
 	return columns, data
 
@@ -145,7 +145,10 @@ def get_columns(filters):
 	]
 	return columns
 
-def get_data(conditions):
+def get_data(conditions,filters):
+	if filters.get('stock_entry_type'):
+		...
+
 	sql = f"""
 		select `tabMaterial Request`.name as matriala_request_name
 	,`tabMaterial Request`.comparison
@@ -186,8 +189,6 @@ def get_data(conditions):
 			check_headers.append(key[2])
 		for child in list(group):
 			result.append(child)
-	# result = sorted(result, key=lambda d: d['stock_entry_name'])  
-	# print (f'\n\n\nsorted=={result}\n\n')
 	return result or []
 
 

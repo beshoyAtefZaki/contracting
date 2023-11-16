@@ -3,12 +3,13 @@
 
 frappe.ui.form.on("Clearance", {
   setup(frm) {
+    let parent = frm.doc.tender ? frm.doc.tender : frm.doc.comparison
     frm.fields_dict["items"].grid.get_field("clearance_state").get_query =
       function (doc, cdt, cdn) {
         return {
           query:
-            "contracting.contracting.doctype.clearance.clearance.get_state_query",
-          filters: { parent: doc.tender },
+            "contracting.contracting.doctype.clearance.clearance.comparsion_state_get_state_query",
+          filters: { parent: parent },
         };
       };
     frm.set_query("account_head", "item_tax", function () {

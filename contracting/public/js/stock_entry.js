@@ -97,7 +97,7 @@ frappe.ui.form.on("Stock Entry", {
                        'fieldname':'purpose'
                     },
                     'callback': function(res){
-                        frm.set_df_property("against_comparison", "hidden", !["Material Transfer", "Material Receipt","Material Issue"].includes(res.message.purpose))
+                        frm.set_df_property("against_comparison", "hidden", ["Repack"].includes(res.message.purpose))
                         frm.set_value("against_comparison", ["Material Transfer", "Material Issue","Material Receipt"].includes(res.message.purpose))
                         frm.refresh_field("against_comparison")
                     }
@@ -121,18 +121,19 @@ frappe.ui.form.on("Stock Entry", {
           if (r.message){
             frm.clear_table("items")
             $.each(r.message || [], function(i, element) {
-              let row = frm.add_child('items', {
-                item_code: element.item_code,
-                item_name: element.item_name,
-                qty: element.total_qty,
-                uom: element.uom,
-                stock_uom: element.uom,
-                transfer_qty: element.total_qty * element.conversion_factor,
-                conversion_factor: element.conversion_factor,
-                basic_rate: element.unit_price,
-                
-            });
+              let d = frappe.model.add_child(cur_frm.doc, "Stock Entry Detail", "items");
+                d.item_code= element.item_code,
+                d.item_name= element.item_name,
+                d.qty= element.total_qty,
+                d.uom= element.uom,
+                d.stock_uom= element.uom,
+                d.transfer_qty= element.total_qty * element.conversion_factor,
+                d.conversion_factor= element.conversion_factor
+                // frm.events.get_item_details_custom(frm, d.doctype, d.name);
+                // frm.events.set_basic_rate(frm, d.doctype, d.name);
+            
             })
+            
             frm.refresh_field("items")
           }
         } 
@@ -142,8 +143,135 @@ frappe.ui.form.on("Stock Entry", {
     
 
   },
+
+  get_item_details_custom: function(frm, cdt, cdn) {
+		console.log('item_adds cstom')
+		var d = locals[cdt][cdn];
+		if(d.item_code) {
+			var args_item_detail = {
+				'item_code'			: d.item_code,
+				'warehouse'			: cstr(d.s_warehouse) || cstr(d.t_warehouse),
+				'transfer_qty'		: d.transfer_qty,
+				'serial_no'		: d.serial_no,
+				'bom_no'		: d.bom_no,
+				'expense_account'	: d.expense_account,
+				'cost_center'		: d.cost_center,
+				'company'		: frm.doc.company,
+				'qty'			: d.qty,
+				'voucher_type'		: frm.doc.doctype,
+				'voucher_no'		: d.name,
+				'allow_zero_valuation': 1,
+			};
+      
+
+      const args_get_incoming_rate = {
+        'item_code'			: d.item_code,
+        'posting_date'		: frm.doc.posting_date,
+        'posting_time'		: frm.doc.posting_time,
+        'warehouse'			: cstr(d.s_warehouse) || cstr(d.t_warehouse),
+        'serial_no'			: d.serial_no,
+        'company'			: frm.doc.company,
+        'qty'				: d.s_warehouse ? -1*flt(d.transfer_qty) : flt(d.transfer_qty),
+        'voucher_type'		: frm.doc.doctype,
+        'voucher_no'		: d.name,
+        'allow_zero_valuation': 1,
+      };
+      frm.call({
+        doc: frm.doc,
+        method:"get_item_stock_details",
+        args:{
+          args_item_detail:args_item_detail,
+          args_get_incoming_rate:args_get_incoming_rate,
+        },
+        callback:function(r){
+          console.log(r.message)
+          console.log(d.idx)
+          d.uom = r.message.uom,
+          d.basic_rate = r.message.rate
+          console.log(d)
+          // frappe.model.set_value
+          // frm.refresh_field("items")
+        }
+      })
+    }
+  },
+
+  get_item_details: function(frm, cdt, cdn) {
+		console.log('item_adds cstom')
+		var d = locals[cdt][cdn];
+		if(d.item_code) {
+			var args_item_detail = {
+				'item_code'			: d.item_code,
+				'warehouse'			: cstr(d.s_warehouse) || cstr(d.t_warehouse),
+				'transfer_qty'		: d.transfer_qty,
+				'serial_no'		: d.serial_no,
+				'bom_no'		: d.bom_no,
+				'expense_account'	: d.expense_account,
+				'cost_center'		: d.cost_center,
+				'company'		: frm.doc.company,
+				'qty'			: d.qty,
+				'voucher_type'		: frm.doc.doctype,
+				'voucher_no'		: d.name,
+				'allow_zero_valuation': 1,
+			};
+      
+
+      const args_get_incoming_rate = {
+        'item_code'			: d.item_code,
+        'posting_date'		: frm.doc.posting_date,
+        'posting_time'		: frm.doc.posting_time,
+        'warehouse'			: cstr(d.s_warehouse) || cstr(d.t_warehouse),
+        'serial_no'			: d.serial_no,
+        'company'			: frm.doc.company,
+        'qty'				: d.s_warehouse ? -1*flt(d.transfer_qty) : flt(d.transfer_qty),
+        'voucher_type'		: frm.doc.doctype,
+        'voucher_no'		: d.name,
+        'allow_zero_valuation': 1,
+      };
+
+			return frappe.call({
+				doc: frm.doc,
+				method: "get_item_details",
+				args: args,
+        async:true,
+        // freeze:true,
+				callback: function(r) {
+					if(r.message) {
+						console.log(r.message)
+						var d = locals[cdt][cdn];
+						$.each(r.message, function(k, v) {
+							if (v) {
+								frappe.model.set_value(cdt, cdn, k, v); // qty and it's subsequent fields weren't triggered
+							}
+						});
+						refresh_field("items");
+
+						let no_batch_serial_number_value = !d.serial_no;
+						if (d.has_batch_no && !d.has_serial_no) {
+							// check only batch_no for batched item
+							no_batch_serial_number_value = !d.batch_no;
+						}
+
+						if (no_batch_serial_number_value && !frappe.flags.hide_serial_batch_dialog) {
+							erpnext.stock.select_batch_and_serial_no(frm, d);
+						}
+					}
+          frm.events.set_basic_rate(frm, d.doctype, d.name);
+				}
+			});
+		}
+	},
 });
 
+
+
+frappe.ui.form.on("Stock Entry Detail", {
+
+  items_add:function(doc,cdt,cdn){
+
+  }
+
+})
 
 
 
