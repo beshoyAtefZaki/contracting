@@ -139,7 +139,8 @@ def get_comparison_item_cards(clearance_item , comparison):
 	ON `tabComparison Item Card Stock Item`.parent = `tabComparison Item Card`.name
 	where `tabComparison Item Card`.comparison = '{comparison}'
 	 and `tabComparison Item Card`.item_code = '{clearance_item}'
-	 ORDER BY `tabComparison Item Card Stock Item`.idx
+	 and `tabComparison Item Card`.docstatus = 1
+	 ORDER BY `tabComparison Item Card Stock Item`.idx 
     """
 	results = frappe.db.sql(sql,as_dict=1)
 	total = results[0].total_item_price
