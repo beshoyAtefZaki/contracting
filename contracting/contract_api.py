@@ -133,16 +133,14 @@ def create_quotation(source_name, target_doc=None, ignore_permissions=True):
 
 @frappe.whitelist()
 def get_comparison_item_cards(clearance_item , comparison):
-	# comparison_item_cards = frappe.get_last_doc("Comparison Item Card" ,
-	# 										  filters={"item_code" : clearance_item , "comparison" : comparison}).c
-	# return comparison_item_cards
 	sql = f"""
-    select * from `tabComparison Item Card Stock Item` 
-	inner join `tabComparison Item Card`
+    select * from `tabComparison Item Card`  
+	inner join `tabComparison Item Card Stock Item`
 	ON `tabComparison Item Card Stock Item`.parent = `tabComparison Item Card`.name
 	where `tabComparison Item Card`.comparison = '{comparison}'
 	 and `tabComparison Item Card`.item_code = '{clearance_item}'
+	 ORDER BY `tabComparison Item Card Stock Item`.idx
     """
-	# print(f'\n\n\n\{sql}\n\n')
-	res = frappe.db.sql(sql,as_dict=1)
-	return res
+	results = frappe.db.sql(sql,as_dict=1)
+	total = results[0].total_item_price
+	return results , total
