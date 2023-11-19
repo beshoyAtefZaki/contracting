@@ -3,6 +3,18 @@
 
 import frappe
 from frappe.model.document import Document
+from frappe.utils import cint, comma_or, cstr, flt, format_time, formatdate, getdate, nowdate
+from erpnext.setup.doctype.item_group.item_group import get_item_group_defaults
+from erpnext import get_company_currency, get_default_company
+from frappe import _
+from erpnext.setup.doctype.brand.brand import get_brand_defaults
+from erpnext.stock.get_item_details import (
+	get_bin_details,
+	get_conversion_factor,
+	get_default_cost_center,
+	get_reserved_qty_for_so,
+)
+import json
 
 class ComparisonItemCard(Document):
 
@@ -39,7 +51,70 @@ class ComparisonItemCard(Document):
 		# if self.qty > self.qty_from_comparison:
 		# 	frappe.throw("""You Cant Select QTY More Than %s"""%self.qty_from_comparison)
 
-	@frappe.whitelist()
-	def get_item_details(self ,item):
-		item = frappe.get_doc("Item" , item)
-		return item
+	# @frappe.whitelist()
+	# def get_item_details(self ,item):
+	# 	item = frappe.get_doc("Item" , item)
+	# 	return item
+
+
+@frappe.whitelist()
+def get_item_details_test(args):
+		args = json.loads(args)
+		# print(f'\n\n\n=args>>{type(args)}\n\n')
+		# print(f'\n\n\n=args>>{args}\n\n')
+		# print(f'\n\n\n=>>{args.get("item_code")}\n\n')
+		company = get_default_company()
+		item = frappe.db.sql(
+			"""select i.name, i.stock_uom, i.description, i.image, i.item_name, i.item_group,
+				i.has_batch_no, i.sample_quantity, i.has_serial_no, i.allow_alternative_item,
+				id.expense_account, id.buying_cost_center
+			from `tabItem` i LEFT JOIN `tabItem Default` id ON i.name=id.parent and id.company=%s
+			where i.name=%s
+				and i.disabled=0
+				and (i.end_of_life is null or i.end_of_life='0000-00-00' or i.end_of_life > %s)""",
+			(company, args.get("item_code"), nowdate()),
+			as_dict=1,
+		)
+		if not item:
+			frappe.throw(
+				_("Item {0} is not active or end of life has been reached").format(args.get("item_code"))
+			)
+
+		item = item[0]
+		item_group_defaults = get_item_group_defaults(item.name, company)
+		brand_defaults = get_brand_defaults(item.name, company)
+		rate,price_list = get_item_price(args.get("item_code")) 
+		ret = frappe._dict(
+			{
+				"uom": item.stock_uom,
+				"stock_uom": item.stock_uom,
+				"description": item.description,
+				"rate":rate,
+				"image": item.image,
+				"item_name": item.item_name,
+				"cost_center": get_default_cost_center(
+					args, item, item_group_defaults, brand_defaults, company
+				),
+				"qty": args.get("qty"),
+				"transfer_qty": args.get("qty"),
+				"conversion_factor": 1,
+				"batch_no": "",
+				"actual_qty": 0,
+				"basic_rate": 0,
+				"serial_no": "",
+				"has_serial_no": item.has_serial_no,
+				"has_batch_no": item.has_batch_no,
+				"sample_quantity": item.sample_quantity,
+				"expense_account": item.expense_account,
+			}
+		)
+		return ret
+
+
+def get_item_price(item_code):
+    item_price = 0
+    price_list =None
+    price_list = frappe.db.get_single_value('Selling Settings','selling_price_list')
+    if price_list:
+        item_price = frappe.db.get_value('Item Price',{'item_code':item_code,'price_list':price_list,'selling':1},'price_list_rate')
+    return [item_price,price_list]

@@ -166,9 +166,10 @@ jenv = {
 # each overriding function accepts a `data` argument;
 # generated from the base implementation of the doctype dashboard,
 # along with any modifications made in other Frappe apps
-# override_doctype_dashboards = {
-# 	"Task": "contracting.task.get_dashboard_data"
-# }
+
+override_doctype_dashboards = {
+	"Project": "contracting.public.dashboard.project_get_dashboard_data.get_data"
+}
 
 # exempt linked doctypes from being automatically cancelled
 #

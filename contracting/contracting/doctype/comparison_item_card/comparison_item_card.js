@@ -84,17 +84,27 @@ frappe.ui.form.on('Comparison Item Card', {
 
 frappe.ui.form.on('Comparison Item Card Stock Item', {
     item:(frm,cdt,cdn)=>{
-        let row = locals[cdt][cdn]
-        frm.call({
-            doc: frm.doc,
-            method: "get_item_details",
-            args: {"item" : row.item},
-            callback: function (r) {
-                row.uom= r.message.weight_uom
-                row.unit_price = r.message.valuation_rate
-                cur_frm.refresh_field("items");
-            },
-         });
+        let d = locals[cdt][cdn]
+        if(d.item){
+            let args = {
+                'item_code'			: d.item,
+                'company'		: frm.doc.company,
+                // 'qty'			: d.qty,
+                'allow_zero_valuation': 1
+            };
+            frm.call({
+                method: "contracting.contracting.doctype.comparison_item_card.comparison_item_card.get_item_details_test",
+                args:{
+                    args:args
+                },
+                callback: function (r) {
+                    // console.log(r.message)
+                    d.uom= r.message.uom
+                    d.unit_price = r.message.rate
+                    cur_frm.refresh_field("items");
+                },
+             });
+        }
     },   
 	unit_price:(frm,cdt,cdn)=>{
         let row = locals[cdt][cdn]
