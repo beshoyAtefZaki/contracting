@@ -28,10 +28,12 @@ frappe.ui.form.on("Stock Entry", {
   },
 
   against_comparison(frm) {
-    frm.events.set_child_table_fields(frm);
+    if(frm.doc.against_comparison){
+      frm.events.set_child_table_fields(frm);
+    }
   },
   comparison: function (frm) {
-    if (frm.doc.against_comparison) {
+    if (frm.doc.against_comparison && frm.doc.stock_entry_type) {
       frappe.call({
         method:
           "contracting.contracting.doctype.stock_functions.stock_entry_setup",
@@ -100,6 +102,8 @@ frappe.ui.form.on("Stock Entry", {
                     },
                     'callback': function(res){
                         frm.set_df_property("against_comparison", "hidden", ["Repack"].includes(res.message.purpose))
+                        let re = ["Material Transfer", "Material Issue","Material Receipt"].includes(res.message.purpose)
+                        console.log(`---------------${res}`)
                         frm.set_value("against_comparison", ["Material Transfer", "Material Issue","Material Receipt"].includes(res.message.purpose))
                         frm.refresh_field("against_comparison")
                     }
