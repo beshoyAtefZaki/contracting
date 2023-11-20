@@ -165,7 +165,7 @@ def get_all(conditions):
 		,`tabComparison Item`.qty comparsion_qty
 		,`tabComparison Item Card Stock Item`.qty qty
 		,(`tabComparison Item Card Stock Item`.qty * `tabComparison Item`.qty)as total_qty
-		,((`tabStock Entry Detail`.qty / (`tabComparison Item Card Stock Item`.qty * `tabComparison Item`.qty) )) as comp_percent
+		,((`tabStock Entry Detail`.qty / (`tabComparison Item Card Stock Item`.qty * `tabComparison Item`.qty) )*100) as comp_percent
 		,((`tabComparison Item Card Stock Item`.qty * `tabComparison Item`.qty) - `tabStock Entry Detail`.qty) as outstand_qty
 		,(((`tabComparison Item Card Stock Item`.qty * `tabComparison Item`.qty) - `tabStock Entry Detail`.qty)/100) as Outstand_percent
 		FROM `tabStock Entry`
@@ -216,10 +216,10 @@ def get_data_on_stock_entry_type(filters):
 			,`tabStock Entry`.comparison_item as main_item
 			,`tabComparison Item Card Stock Item`.item as child_item_name
 			,1 as  main_item_qty 
-			,`tabComparison Item`.qty comparsion_qty
-			,`tabComparison Item Card Stock Item`.qty qty
+			,SUM(`tabComparison Item`.qty) comparsion_qty
+			,SUM(`tabComparison Item Card Stock Item`.qty) qty
 			,(`tabComparison Item Card Stock Item`.qty * `tabComparison Item`.qty)as total_qty
-			,((`tabStock Entry Detail`.qty / (`tabComparison Item Card Stock Item`.qty * `tabComparison Item`.qty) )) as comp_percent
+			,((`tabStock Entry Detail`.qty / (`tabComparison Item Card Stock Item`.qty * `tabComparison Item`.qty) )*100) as comp_percent
 			,((`tabComparison Item Card Stock Item`.qty * `tabComparison Item`.qty) - `tabStock Entry Detail`.qty) as outstand_qty
 			,(((`tabComparison Item Card Stock Item`.qty * `tabComparison Item`.qty) - `tabStock Entry Detail`.qty)/100) as Outstand_percent
 			FROM `tabStock Entry`
