@@ -86,6 +86,12 @@ def get_columns(filters):
 		# 	"width": 160,
 		# },
 		{
+			"label": _("Stock Qty"),
+			"fieldname": "stock_qty",
+			"fieldtype": "Float",
+			"width": 160,
+		},
+		{
 			"label": _("Qty"),
 			"fieldname": "qty",
 			"fieldtype": "Float",
@@ -134,40 +140,47 @@ def get_columns(filters):
 	return columns
 
 def get_data(conditions):
-	sql = f"""
+	sql = """
 		select `tabStock Entry`.name as stock_entry_name_
-	,`tabStock Entry`.comparison
-	,`tabStock Entry`.comparison_item as main_item
-	,`tabStock Entry`.from_warehouse
-	,`tabStock Entry`.to_warehouse
-	,CONCAT(`tabStock Entry Detail`.item_code ,":",`tabStock Entry Detail`.item_name)as child_item
-	,(`tabStock Entry Detail`.qty / `tabComparison Item`.qty) as qty
-	,`tabComparison`.customer as cst
-	,`tabComparison Item`.clearance_item_name as main_item_name
-	,`tabComparison Item`.qty comparsion_qty
-	,(`tabStock Entry Detail`.qty ) as total_qty
-	,((`tabStock Entry Detail`.qty / `tabComparison Item`.qty) / (`tabStock Entry Detail`.qty )) as comp_percent
-	,((`tabStock Entry Detail`.qty ) - (`tabStock Entry Detail`.qty / `tabComparison Item`.qty)) as outstand_qty
-	,((`tabStock Entry Detail`.qty ) - (`tabStock Entry Detail`.qty / `tabComparison Item`.qty)) as Outstand_percent
-	FROM `tabStock Entry`
-	INNER JOIN `tabStock Entry Detail`
-	ON `tabStock Entry Detail`.parent=`tabStock Entry`.name
-	INNER JOIN `tabComparison`
-	ON `tabComparison`.name=`tabStock Entry`.comparison
-	INNER JOIN `tabComparison Item`
-	ON `tabComparison`.name=`tabComparison Item`.parent 
-	AND `tabComparison Item`.clearance_item=`tabStock Entry`.comparison_item
-	WHERE `tabStock Entry`.comparison is not null
-	AND `tabStock Entry`.docstatus=1 AND {conditions}
-	ORDER BY `tabStock Entry`.name
+		,`tabStock Entry`.stock_entry_type 
+		,`tabStock Entry Detail`.item_code
+		,`tabComparison`.customer as cst
+		,CONCAT(`tabStock Entry Detail`.item_code ,":",`tabStock Entry Detail`.item_name)as child_item
+		,`tabStock Entry`.comparison_item as main_item
+		,`tabComparison Item Card Stock Item`.item as child_item_name
+		,`tabStock Entry`.from_warehouse
+		,`tabStock Entry`.to_warehouse
+		,(`tabStock Entry Detail`.qty ) as stock_qty
+		,1 as  main_item_qty 
+		,`tabComparison Item`.qty comparsion_qty
+		,`tabComparison Item Card Stock Item`.qty qty
+		,(`tabComparison Item Card Stock Item`.qty * `tabComparison Item`.qty)as total_qty
+		,((`tabStock Entry Detail`.qty / (`tabComparison Item Card Stock Item`.qty * `tabComparison Item`.qty) )) as comp_percent
+		,((`tabComparison Item Card Stock Item`.qty * `tabComparison Item`.qty) - `tabStock Entry Detail`.qty) as outstand_qty
+		,(((`tabComparison Item Card Stock Item`.qty * `tabComparison Item`.qty) - `tabStock Entry Detail`.qty)/100) as Outstand_percent
+		FROM `tabStock Entry`
+		INNER JOIN `tabStock Entry Detail`
+		ON `tabStock Entry Detail`.parent=`tabStock Entry`.name	
+		INNER JOIN `tabComparison Item Card`
+		ON `tabComparison Item Card`.comparison =`tabStock Entry`.comparison
+		AND `tabComparison Item Card`.item_code = `tabStock Entry`.comparison_item 
+		INNER JOIN `tabComparison Item Card Stock Item`
+			ON `tabComparison Item Card Stock Item`.parent=`tabComparison Item Card`.name
+			AND `tabComparison Item Card Stock Item`.item=`tabStock Entry Detail`.item_code
+		INNER JOIN `tabComparison`
+		ON `tabComparison`.name=`tabComparison Item Card`.comparison
+		INNER JOIN `tabComparison Item`
+		ON `tabComparison Item`.parent=`tabComparison Item Card`.comparison
+		where `tabStock Entry`.name='MAT-STE-2023-00015' and `tabComparison Item Card`.docstatus=1 and `tabComparison`.docstatus=1
+		ORDER BY `tabStock Entry`.name
 	"""
 	data = frappe.db.sql(sql,as_dict=1)
 	result = []
 	check_headers = []
-	key_func = lambda x: (x["main_item"], x["cst"],x['stock_entry_name_'],x['comparsion_qty']) 
+	key_func = lambda x: (x["main_item"], x["cst"],x['stock_entry_name_'],x['main_item_qty'],x['comparsion_qty']) 
 	for key, group in itertools.groupby(data, key_func):
 		if key[2] not in check_headers: # stock entry not add before
-			head_row = {'main_item':key[0],'customer':key[1],'stock_entry_name':key[2],'qty':key[3],'header':True}
+			head_row = {'main_item':key[0],'customer':key[1],'stock_entry_name':key[2],'qty':key[3],'total_qty':key[4],'header':True}
 			result.append(head_row)
 			check_headers.append(key[2])
 		for child in list(group):
@@ -178,3 +191,30 @@ def get_data(conditions):
 
 
 
+# f"""
+# 		select `tabStock Entry`.name as stock_entry_name_
+# 	,`tabStock Entry`.comparison
+# 	,`tabStock Entry`.comparison_item as main_item
+# 	,`tabStock Entry`.from_warehouse
+# 	,`tabStock Entry`.to_warehouse
+# 	,CONCAT(`tabStock Entry Detail`.item_code ,":",`tabStock Entry Detail`.item_name)as child_item
+# 	,(`tabStock Entry Detail`.qty / `tabComparison Item`.qty) as qty
+# 	,`tabComparison`.customer as cst
+# 	,`tabComparison Item`.clearance_item_name as main_item_name
+# 	,`tabComparison Item`.qty comparsion_qty
+# 	,(`tabStock Entry Detail`.qty ) as total_qty
+# 	,((`tabStock Entry Detail`.qty / `tabComparison Item`.qty) / (`tabStock Entry Detail`.qty )) as comp_percent
+# 	,((`tabStock Entry Detail`.qty ) - (`tabStock Entry Detail`.qty / `tabComparison Item`.qty)) as outstand_qty
+# 	,((`tabStock Entry Detail`.qty ) - (`tabStock Entry Detail`.qty / `tabComparison Item`.qty)) as Outstand_percent
+# 	FROM `tabStock Entry`
+# 	INNER JOIN `tabStock Entry Detail`
+# 	ON `tabStock Entry Detail`.parent=`tabStock Entry`.name
+# 	INNER JOIN `tabComparison`
+# 	ON `tabComparison`.name=`tabStock Entry`.comparison
+# 	INNER JOIN `tabComparison Item`
+# 	ON `tabComparison`.name=`tabComparison Item`.parent 
+# 	AND `tabComparison Item`.clearance_item=`tabStock Entry`.comparison_item
+# 	WHERE `tabStock Entry`.comparison is not null
+# 	AND `tabStock Entry`.docstatus=1 AND {conditions}
+# 	ORDER BY `tabStock Entry`.name
+# 	"""
