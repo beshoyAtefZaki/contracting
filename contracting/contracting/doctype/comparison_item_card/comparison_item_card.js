@@ -10,6 +10,9 @@ frappe.ui.form.on('Comparison Item Card', {
 	setup: function(frm) {
         frm.events.setup_quiries(frm)
 	},
+    refresh: function(frm) {
+        frm.events.setup_quiries(frm)
+	},
     setup_quiries:function(frm){
         frm.set_query("item", "items", function () {
             return {
