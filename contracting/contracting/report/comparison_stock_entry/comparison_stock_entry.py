@@ -8,7 +8,7 @@ from frappe import _
 def execute(filters=None):
 	columns = get_columns(filters) or []
 	conditions = get_conditions(filters) or []
-	data = get_data(conditions) or []
+	data = get_data(conditions,filters) or []
 	# print (f'\n\n\ndata====>{data}\n\n')
 	return columns, data
 
@@ -139,7 +139,17 @@ def get_columns(filters):
 	]
 	return columns
 
-def get_data(conditions):
+
+
+def get_data(conditions,filters):
+	data = []
+	if filters.get('stock_entry_type'):
+		data = get_data_on_stock_entry_type(filters)
+	else:
+		data = get_all(conditions)
+	return data
+
+def get_all(conditions):
 	sql = """
 		select `tabStock Entry`.name as stock_entry_name_
 		,`tabStock Entry`.stock_entry_type 
@@ -171,7 +181,7 @@ def get_data(conditions):
 		ON `tabComparison`.name=`tabComparison Item Card`.comparison
 		INNER JOIN `tabComparison Item`
 		ON `tabComparison Item`.parent=`tabComparison Item Card`.comparison
-		where `tabStock Entry`.name='MAT-STE-2023-00015' and `tabComparison Item Card`.docstatus=1 and `tabComparison`.docstatus=1
+		where  `tabComparison Item Card`.docstatus=1 and `tabComparison`.docstatus=1
 		ORDER BY `tabStock Entry`.name
 	"""
 	data = frappe.db.sql(sql,as_dict=1)
@@ -189,7 +199,50 @@ def get_data(conditions):
 	# print (f'\n\n\nsorted=={result}\n\n')
 	return result or []
 
-
+def get_data_on_stock_entry_type(filters):
+	conditions = " 1=1 "
+	if filters.get('stock_entry_type'):
+			# stock_entry_type = frappe.db.get_value('Stock Entry Type',filters.get('stock_entry_type'),'purpose')
+			conditions += " AND `tabStock Entry`.stock_entry_type = '%s' "%(filters.get('stock_entry_type'))
+			sql = f"""
+			select `tabStock Entry`.name as stock_entry_name_
+			,`tabStock Entry`.stock_entry_type 
+			,`tabStock Entry Detail`.item_code
+			,`tabComparison`.customer as cst
+			,`tabStock Entry`.from_warehouse
+			,`tabStock Entry`.to_warehouse
+			,sum(`tabStock Entry Detail`.qty ) as stock_qty
+			,CONCAT(`tabStock Entry Detail`.item_code ,":",`tabStock Entry Detail`.item_name)as child_item
+			,`tabStock Entry`.comparison_item as main_item
+			,`tabComparison Item Card Stock Item`.item as child_item_name
+			,1 as  main_item_qty 
+			,`tabComparison Item`.qty comparsion_qty
+			,`tabComparison Item Card Stock Item`.qty qty
+			,(`tabComparison Item Card Stock Item`.qty * `tabComparison Item`.qty)as total_qty
+			,((`tabStock Entry Detail`.qty / (`tabComparison Item Card Stock Item`.qty * `tabComparison Item`.qty) )) as comp_percent
+			,((`tabComparison Item Card Stock Item`.qty * `tabComparison Item`.qty) - `tabStock Entry Detail`.qty) as outstand_qty
+			,(((`tabComparison Item Card Stock Item`.qty * `tabComparison Item`.qty) - `tabStock Entry Detail`.qty)/100) as Outstand_percent
+			FROM `tabStock Entry`
+			INNER JOIN `tabStock Entry Detail`
+			ON `tabStock Entry Detail`.parent=`tabStock Entry`.name	
+			INNER JOIN `tabComparison Item Card`
+			ON `tabComparison Item Card`.comparison =`tabStock Entry`.comparison
+			AND `tabComparison Item Card`.item_code = `tabStock Entry`.comparison_item 
+			INNER JOIN `tabComparison Item Card Stock Item`
+				ON `tabComparison Item Card Stock Item`.parent=`tabComparison Item Card`.name
+				AND `tabComparison Item Card Stock Item`.item=`tabStock Entry Detail`.item_code
+			INNER JOIN `tabComparison`
+			ON `tabComparison`.name=`tabComparison Item Card`.comparison
+			INNER JOIN `tabComparison Item`
+			ON `tabComparison Item`.parent=`tabComparison Item Card`.comparison
+			where  `tabComparison Item Card`.docstatus=1 and `tabComparison`.docstatus=1
+			AND `tabStock Entry`.stock_entry_type='Material Transfer' AND {conditions}
+			GROUP BY `tabStock Entry`.stock_entry_type,`tabStock Entry Detail`.item_code,`tabStock Entry`.from_warehouse
+			ORDER BY `tabStock Entry`.name desc 
+			limit 10
+			"""
+			data = frappe.db.sql(sql,as_dict=1)
+			return data
 
 # f"""
 # 		select `tabStock Entry`.name as stock_entry_name_
