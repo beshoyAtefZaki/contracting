@@ -99,8 +99,7 @@ def create_quotation(source_name, target_doc=None, ignore_permissions=True):
 			ignore_permissions=ignore_permissions,
 		)
 	# frappe.errprint(f'docs-->{docs.__dict__}')
-
-
+	docs.comparison = source_name
 	source_doc = frappe.get_doc("Comparison", source_name)
 	#get items
 	for row in source_doc.item:

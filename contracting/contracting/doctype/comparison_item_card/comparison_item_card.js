@@ -103,12 +103,40 @@ frappe.ui.form.on('Comparison Item Card Stock Item', {
                 callback: function (r) {
                     // console.log(r.message)
                     d.uom= r.message.uom
-                    d.unit_price = r.message.rate
                     cur_frm.refresh_field("items");
                 },
              });
         }
+        if (d.item_price){
+            frm.call({
+                doc: frm.doc,
+                method: "validat_item",
+                args :{ "item_price" : d.item_price , "item" : d.item},
+                callback: function (r) {
+                    if (r.message){
+                        d.unit_price = r.message || 0.0
+                        frm.refresh_fields("items")
+                    }
+                },
+            });
+        }
     },   
+    item_price :(frm,cdt,cdn)=>{
+        let row = locals[cdt][cdn]
+        if (row.item){
+            frm.call({
+                doc: frm.doc,
+                method: "validat_item",
+                args :{ "item_price" : row.item_price , "item" : row.item},
+                callback: function (r) {
+                    if (r.message){
+                        row.unit_price = r.message || 0.0
+                        frm.refresh_fields("items")
+                    }
+                },
+                });
+        }
+    },
 	unit_price:(frm,cdt,cdn)=>{
         let row = locals[cdt][cdn]
         row.total_amount = (row.qty || 0 ) *  (row.unit_price || 0)
@@ -125,11 +153,46 @@ frappe.ui.form.on('Comparison Item Card Stock Item', {
 });
 
 frappe.ui.form.on('Comparison Item Card Service Item', {
+    item_code:(frm,cdt,cdn)=>{
+        let d = locals[cdt][cdn]
+        if (d.item_price){
+            frm.call({
+                doc: frm.doc,
+                method: "validat_item",
+                args :{ "item_price" : d.item_price , "item" : d.item_code},
+                callback: function (r) {
+                    if (r.message){
+                        console.log(r.message)
+                        d.unit_price = r.message || 0.0
+                        frm.refresh_fields("services")
+                    }
+                },
+            });
+        }
+    },
 	unit_price:(frm,cdt,cdn)=>{
         let row = locals[cdt][cdn]
         row.total_amount = (row.qty || 0 ) *  (row.unit_price || 0)
        frm.events.calc_service_items_toals(frm,cdt,cdn)
         frm.refresh_fields("services")
+    },
+    item_price :(frm,cdt,cdn)=>{
+        console.log("hfh")
+        let row = locals[cdt][cdn]
+        if (row.item_code){
+            frm.call({
+                doc: frm.doc,
+                method: "validat_item",
+                args :{ "item_price" : row.item_price , "item" : row.item_code},
+                callback: function (r) {
+                    if (r.message){
+                        console.log(r.message)
+                        row.unit_price = r.message || 0.0
+                        frm.refresh_fields("services")
+                    }
+                },
+                });
+        }
     },
     qty:(frm,cdt,cdn)=>{
         let row = locals[cdt][cdn]

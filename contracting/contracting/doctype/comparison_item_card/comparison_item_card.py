@@ -51,11 +51,14 @@ class ComparisonItemCard(Document):
 		# if self.qty > self.qty_from_comparison:
 		# 	frappe.throw("""You Cant Select QTY More Than %s"""%self.qty_from_comparison)
 
-	# @frappe.whitelist()
-	# def get_item_details(self ,item):
-	# 	item = frappe.get_doc("Item" , item)
-	# 	return item
+	@frappe.whitelist()
+	def validat_item(self , item_price , item):
+		item_price = frappe.get_doc("Item Price" , item_price) 
+		if item_price.item_code == item and item_price.selling == 1:
+			return item_price.price_list_rate
 
+		
+			
 
 @frappe.whitelist()
 def get_item_details_test(args):
