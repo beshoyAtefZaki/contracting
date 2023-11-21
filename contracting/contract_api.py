@@ -143,8 +143,8 @@ def get_comparison_item_cards(clearance_item , comparison):
 	 ORDER BY `tabComparison Item Card Stock Item`.idx 
     """
 	total = 0
-	results = frappe.db.sql(sql,as_dict=1)
+	results = None # frappe.db.sql(sql,as_dict=1)
 	if results :
 		if results[0].total_item_price :
 			total = results[0].total_item_price 
-		return results , total
+	return results or [], total or 0
