@@ -10,7 +10,7 @@ Customer {0} does not belong to project {1},العميل {0} لا ينتمي ا�
 Delivery Notes {0} must be cancelled before cancelling this Sales Order,مذكرات التسليم {0} يجب أن يتم الغاؤها قبل الغاء أمر البيع هذا\n<br>\nDelivery Notes {0} must be cancelled before cancelling this Sales Order,
 Delivery warehouse required for stock item {0},مستودع التسليم مطلوب للبند المستودعي {0}\n<br>\nDelivery warehouse required for stock item {0},
 Expected Delivery Date should be after Sales Order Date,يجب أن يكون تاريخ التسليم المتوقع بعد تاريخ أمر المبيعات,
-Item,"Item,,,,,,,,,,,,,,,,,,,,,,,,",
+Item,"Item",
 Item Code,رمز السلعة,
 Item name,اسم السلعة,
 Item {0} has no Serial No. Only serilialized items can have delivery based on Serial No,لا يحتوي العنصر {0} على رقم مسلسل. يمكن فقط تسليم العناصر المسلسلة بناءً على الرقم التسلسلي,
@@ -24,7 +24,7 @@ Maintenance Visit {0} must be cancelled before cancelling this Sales Order,يج�
 No active BOM found for item {0}. Delivery by Serial No cannot be ensured,لم يتم العثور على BOM نشط للعنصر {0}. لا يمكن ضمان التسليم عن طريق الرقم التسلسلي,
 Not Paid and Not Delivered,لم يتم الدفع ولم يتم التسليم,
 Not permitted,غير مسموح به,
-Note,"Note,,,,,,,,,,,,,,,,,,,,,,,,",
+Note,"Note",
 Orders,أوامر,
 Paid,مدفوع,
 Paid and Not Delivered,تم الدفع ولم يتم التسليم,
@@ -34,7 +34,7 @@ Please enter Delivery Date,الرجاء إدخال تاريخ التسليم,
 Please select BOM against item {0},الرجاء اختيار بوم ضد العنصر {0},
 Please select Qty against item {0},الرجاء اختيار الكمية ضد العنصر {0},
 Please set a Supplier against the Items to be considered in the Purchase Order.,يرجى تعيين مورد مقابل العناصر التي يجب مراعاتها في أمر الشراء.,
-Price,"Price,,,,,,,,,,,,,,,,,,,,,,,,",
+Price,"Price",
 Purchase Invoice,فاتورة شراء,
 Purchase Order,أمر الشراء,
 Purchasing,المشتريات,

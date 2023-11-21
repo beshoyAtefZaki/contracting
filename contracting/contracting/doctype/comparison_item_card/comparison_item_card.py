@@ -26,7 +26,7 @@ class ComparisonItemCard(Document):
 		self.calcualte_profit()
 			# doc.save()
 	def calcualte_profit(self):
-		self.result = (self.total_item_cost / self.qty)
+		self.result = (self.total_item_cost or 0 / self.qty)
 		doc = frappe.get_doc("Comparison",self.comparison)
 		if bool(doc):
 			for item in doc.item :
