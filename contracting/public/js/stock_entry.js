@@ -152,7 +152,7 @@ frappe.ui.form.on("Stock Entry", {
   },
 
   get_item_details_custom: function(frm, cdt, cdn) {
-		console.log('item_adds cstom')
+		// console.log('item_adds cstom')
 		var d = locals[cdt][cdn];
 		if(d.item_code) {
 			var args_item_detail = {
