@@ -403,6 +403,9 @@ frappe.ui.form.on("Comparison", {
     if (frm.doc.customer != "") {
       frm.events.validate_customer(frm);
     }
+    frm.set_query("project", () => {
+     return { filters: {customer : frm.doc.customer} };
+   });
   },
   contractor: (frm) => {
     if (frm.doc.contractor) {

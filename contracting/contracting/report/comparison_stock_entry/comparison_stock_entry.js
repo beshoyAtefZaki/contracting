@@ -37,12 +37,12 @@ frappe.query_reports["Comparison Stock Entry"] = {
 			fieldtype: "Link",
 			options: "Warehouse",
 		},
-		{
-			fieldname: "customer",
-			label: __("Customer"),
-			fieldtype: "Link",
-			options: "Customer",
-		},
+		// {
+		// 	fieldname: "customer",
+		// 	label: __("Customer"),
+		// 	fieldtype: "Link",
+		// 	options: "Customer",
+		// },
 		{
 			fieldname: "stock_entry_type",
 			label: __("Stock Entry Type"),

@@ -12,10 +12,12 @@
   "uom",
   "section_break_5",
   "qty",
+  "item_price",
   "unit_price",
   "column_break_8",
   "total_amount",
-  "reference_item"
+  "reference_item",
+  "comparison"
  ],
  "fields": [
   {
@@ -77,12 +79,25 @@
    "label": "Reference Item",
    "options": "Item",
    "read_only": 1
+  },
+  {
+   "fieldname": "item_price",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Item Price",
+   "options": "Item Price"
+  },
+  {
+   "fieldname": "comparison",
+   "fieldtype": "Link",
+   "label": "Comparison",
+   "options": "Comparison"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2023-10-01 13:54:44.385390",
+ "modified": "2023-11-21 16:25:02.359192",
  "modified_by": "Administrator",
  "module": "Contracting",
  "name": "Comparison Item Card Stock Item",
