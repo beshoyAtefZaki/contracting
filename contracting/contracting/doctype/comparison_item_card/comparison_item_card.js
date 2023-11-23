@@ -177,7 +177,6 @@ frappe.ui.form.on('Comparison Item Card Service Item', {
         frm.refresh_fields("services")
     },
     item_price :(frm,cdt,cdn)=>{
-        console.log("hfh")
         let row = locals[cdt][cdn]
         if (row.item_code){
             frm.call({
@@ -186,7 +185,6 @@ frappe.ui.form.on('Comparison Item Card Service Item', {
                 args :{ "item_price" : row.item_price , "item" : row.item_code},
                 callback: function (r) {
                     if (r.message){
-                        console.log(r.message)
                         row.unit_price = r.message || 0.0
                         frm.refresh_fields("services")
                     }

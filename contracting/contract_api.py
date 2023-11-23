@@ -62,6 +62,7 @@ def create_quotation(source_name, target_doc=None, ignore_permissions=True):
 					"field_map": {
 						 "customer":"party_name",
 						 "project":"project",
+						  source_name: "comparison",
 						 "start_date":"transaction_date",
 						"purchase_taxes_and_charges_template": "taxes_and_charges",
 					},
