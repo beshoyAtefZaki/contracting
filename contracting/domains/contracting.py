@@ -8,6 +8,14 @@ from frappe import _
 data = {
     'custom_fields':
     {
+        'Journal Entry':[
+            {
+                "label":_("Notebook No"),
+                "fieldname":"notebook_no",
+                "fieldtype":"Data",
+                "insert_after":"multi_currency", 
+            },
+        ],
         "Material Request":[
             {
                 "fieldname": "comparison",
