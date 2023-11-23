@@ -64,15 +64,15 @@ def get_columns(filters):
 			"options": "Item",
 			"width": 160,
 		},
+		# {
+		# 	"label": _("Child Item Name"),
+		# 	"fieldname": "child_item_name",
+		# 	"fieldtype": "Link",
+		# 	"options": "Item",
+		# 	"width": 160,
+		# },
 		{
-			"label": _("Child Item Name"),
-			"fieldname": "child_item_name",
-			"fieldtype": "Link",
-			"options": "Item",
-			"width": 160,
-		},
-		{
-			"label": _("comp_item_card"),
+			"label": _("Comparsion Item Card"),
 			"fieldname": "comp_item_card",
 			"fieldtype": "Link",
 			"options": "Item",
@@ -161,6 +161,8 @@ def get_all(conditions):
 	sql = f"""
 		select 
 			`tabStock Entry`.name as stock_entry_name_
+			,`tabComparison`.customer as customer
+			,`tabComparison`.name as comparison
 			,`tabStock Entry`.stock_entry_type 
 			,`tabStock Entry Detail`.item_code
 			,`tabComparison Item Card Stock Item`.item as child_item_name
@@ -171,18 +173,21 @@ def get_all(conditions):
 			,`tabStock Entry`.to_warehouse
 			,(`tabStock Entry Detail`.qty ) as stock_qty
 			,1 as  main_item_qty 
-			,`tabComparison Item Card`.item_comparison_number comparsion_qty
+			,`tabComparison Item Card`.qty comparsion_qty
 			,`tabComparison Item Card Stock Item`.qty as comparsion_stock_qty
-			,(`tabComparison Item Card Stock Item`.qty * `tabComparison Item Card`.item_comparison_number)as total_qty
-			,((`tabStock Entry Detail`.qty / (`tabComparison Item Card Stock Item`.qty * `tabComparison Item Card`.item_comparison_number) )*100) as comp_percent
-			,((`tabComparison Item Card Stock Item`.qty * `tabComparison Item Card`.item_comparison_number) - `tabStock Entry Detail`.qty) as outstand_qty
-			,(((`tabComparison Item Card Stock Item`.qty * `tabComparison Item Card`.item_comparison_number) - `tabStock Entry Detail`.qty)/100) as Outstand_percent
+			,(`tabComparison Item Card Stock Item`.qty * `tabComparison Item Card`.qty)as total_qty
+			,((`tabStock Entry Detail`.qty / (`tabComparison Item Card Stock Item`.qty * `tabComparison Item Card`.qty) )*100) as comp_percent
+			,((`tabComparison Item Card Stock Item`.qty * `tabComparison Item Card`.qty) - `tabStock Entry Detail`.qty) as outstand_qty
+			,(((`tabComparison Item Card Stock Item`.qty * `tabComparison Item Card`.qty) - `tabStock Entry Detail`.qty)/100) as Outstand_percent
 			FROM `tabStock Entry`
 				INNER JOIN `tabStock Entry Detail`
 					ON `tabStock Entry Detail`.parent=`tabStock Entry`.name	
+				INNER JOIN `tabComparison`
+					ON `tabComparison`.name=`tabStock Entry`.comparison
 				INNER JOIN `tabComparison Item Card`
 					ON `tabComparison Item Card`.comparison =`tabStock Entry`.comparison
 					AND `tabComparison Item Card`.item_code = `tabStock Entry`.comparison_item 
+					AND `tabComparison Item Card`.comparison  = `tabComparison`.name
 				INNER JOIN `tabComparison Item Card Stock Item`
 					ON `tabComparison Item Card Stock Item`.parent=`tabComparison Item Card`.name 
 					AND `tabComparison Item Card Stock Item`.item=`tabStock Entry Detail`.item_code 
