@@ -12,7 +12,82 @@ frappe.ui.form.on('Comparison Item Card', {
 	},
     refresh: function(frm) {
         frm.events.setup_quiries(frm)
+        frm.events.upload_download_data(frm)
 	},
+    upload_download_data:function(frm){
+        //download_data
+        frm.fields_dict["items"].grid.add_custom_button(
+            __("Download Data"),
+            function() {
+              // console.log("frm.items");contracting/contracting/contract_api.py
+              frappe.call({
+                method: "contracting.contract_api.export_data_to_file_fields",
+                args: {
+                  items: frm.doc.items,
+                  colms:['item','item_name','uom','qty','unit_price','total_amount']
+                },
+                callback: function(r) {
+                  if (r.message){
+                    console.log(r.message)
+                      let file = r.message.file 
+                      let file_url = r.message.file_url 
+                    //   window.open(file_url);
+                      file_url = file_url.replace(/#/g, '%23');
+                      window.open(file_url);
+                  }
+                },
+              });
+      
+            }
+          ).addClass("btn-primary");
+        
+          frm.fields_dict["items"].grid.add_custom_button(
+            __("Upload Data"),
+            function() {
+                let d = new frappe.ui.Dialog({
+                    title: "Enter details",
+                    fields: [
+                      {
+                        label: "Excel File",
+                        fieldname: "first_name",
+                        fieldtype: "Attach",
+                      },
+                    ],
+                    primary_action_label: "Submit",
+                    primary_action(values) {
+                      var f = values.first_name;
+                      frappe.call({
+                        method:"contracting.contract_api.upload_data_comaprsion_item_card",
+                        args: {
+                          file: values.first_name,
+                          colms:['item','item_name','uom','qty','unit_price','total_amount']
+                        },
+                        callback: function(r) {
+                          if (r.message) {
+                            frm.clear_table("items");
+                            frm.refresh_fields("items");
+                            r.message.forEach((element) => {
+                              var row = frm.add_child("items");
+                              row.item = element.item;
+                              row.item_name = element.item_name;
+                              row.uom = element.uom;
+                              row.qty = element.qty;
+                              row.unit_price = element.unit_price;
+                              row.total_amount = element.total_amount;
+                            });
+                            frm.refresh_fields("items");
+                          }
+                        },
+                      });
+                      d.hide();
+                    },
+                  });
+                  d.show();
+            }).addClass("btn-success");
+            frm.fields_dict["items"].grid.grid_buttons
+            .find(".btn-custom")
+            .removeClass("btn-default")
+    },
     setup_quiries:function(frm){
         frm.set_query("item", "items", function () {
             return {
