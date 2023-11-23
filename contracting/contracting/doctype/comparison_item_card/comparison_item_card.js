@@ -13,6 +13,7 @@ frappe.ui.form.on('Comparison Item Card', {
     refresh: function(frm) {
         frm.events.setup_quiries(frm)
         frm.events.upload_download_data(frm)
+        
 	},
     upload_download_data:function(frm){
         //download_data
@@ -55,6 +56,7 @@ frappe.ui.form.on('Comparison Item Card', {
                     ],
                     primary_action_label: "Submit",
                     primary_action(values) {
+                      console.log(`values===>${JSON.stringify(values)}`);
                       var f = values.first_name;
                       frappe.call({
                         method:"contracting.contract_api.upload_data_comaprsion_item_card",
@@ -103,6 +105,17 @@ frappe.ui.form.on('Comparison Item Card', {
               ],
             };
           });
+          frm.fields_dict["items"].grid.get_field("item_price").get_query = function(doc, cdt, cdn)  {
+            var d = locals[cdt][cdn];
+            return {
+                filters: {
+                'item_code': d.item,
+                'selling': 1,
+                }
+        
+            }
+        
+        }
     },
     qty:(frm,cdt,cdn)=>{
       let qty =frm.doc.qty
@@ -195,6 +208,17 @@ frappe.ui.form.on('Comparison Item Card Stock Item', {
                 },
             });
         }
+        cur_frm.fields_dict["items"].grid.get_field("item_price").get_query = function(doc) {
+            console.log('test---')
+            return {
+                filters: {
+                'item_code': row.item,
+                }
+        
+            }
+        
+        }
+        frm.refresh_field('items')
     },   
     item_price :(frm,cdt,cdn)=>{
         let row = locals[cdt][cdn]
