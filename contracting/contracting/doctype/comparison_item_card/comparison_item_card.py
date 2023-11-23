@@ -63,9 +63,6 @@ class ComparisonItemCard(Document):
 @frappe.whitelist()
 def get_item_details_test(args):
 		args = json.loads(args)
-		# print(f'\n\n\n=args>>{type(args)}\n\n')
-		# print(f'\n\n\n=args>>{args}\n\n')
-		# print(f'\n\n\n=>>{args.get("item_code")}\n\n')
 		company = get_default_company()
 		item = frappe.db.sql(
 			"""select i.name, i.stock_uom, i.description, i.image, i.item_name, i.item_group,
