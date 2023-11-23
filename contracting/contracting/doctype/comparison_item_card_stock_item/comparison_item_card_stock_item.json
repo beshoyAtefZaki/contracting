@@ -16,7 +16,8 @@
   "unit_price",
   "column_break_8",
   "total_amount",
-  "reference_item"
+  "reference_item",
+  "comparison"
  ],
  "fields": [
   {
@@ -85,6 +86,12 @@
    "in_list_view": 1,
    "label": "Item Price",
    "options": "Item Price"
+  },
+  {
+   "fieldname": "comparison",
+   "fieldtype": "Link",
+   "label": "Comparison",
+   "options": "Comparison"
   }
  ],
  "index_web_pages_for_search": 1,
