@@ -175,11 +175,12 @@ def export_data_to_file_fields(items,colms):
 #upload_data
 @frappe.whitelist()
 def upload_data_comaprsion_item_card(file,colms):
+	"""
+	dtype='object' to read elemnt as object and not remove leading zero in value
+	"""
 	pat = file.split('/')
 	usecols = json.loads(colms)
-	# data = pd.read_csv(frappe.get_site_path('private', 'files', str(pat[-1])), usecols=usecols)
-	#!---
-	data = pd.read_excel(frappe.get_site_path('private', 'files', str(pat[-1])) ,sheet_name = 0,engine='openpyxl',usecols=usecols)
+	data = pd.read_excel(frappe.get_site_path('private', 'files', str(pat[-1])) ,sheet_name = 0,engine='openpyxl',dtype='object', usecols=usecols)
 	data = data.fillna('')
 	return get_data(data) 
 
@@ -194,6 +195,7 @@ def get_data(data):
 			uom = row.get('uom')  if str(row.get('uom')) !='nan' and row.get('uom') else " "
 			unit_price = row.get('unit_price')  if str(row.get('unit_price')) !='nan' and row.get('unit_price') else 0
 			total_amount = row.get('total_amount')  if str(row.get('total_amount')) !='nan' and row.get('total_amount') else 0
+			# print('\n\n\n=in row=>',row,'\n\n\n')
 			valid_item =  validate_item_code(item_code)
 			if valid_item:
 				if valid_item: #! deleted qty >0

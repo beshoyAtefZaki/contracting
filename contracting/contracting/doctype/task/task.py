@@ -8,9 +8,9 @@ def create_tasks_from_sales_order(source_name):
     if not so.comparison :
         frappe.throw(_("Sales Order hasn't Comparison"))
     comparison = frappe.get_doc("Comparison" , so.comparison)
-    if not comparison.tender :
-        frappe.throw(_("Comparison hasn't Tender"))
-    tender = frappe.get_doc("Tender" , comparison.tender)
+    # if not comparison.tender :
+    #     frappe.throw(_("Comparison hasn't Tender"))
+    tender = frappe.get_doc("Tender" , comparison.tender) or ''
     tasks = []
     for item in so.items :
         for state in tender.states_template :
