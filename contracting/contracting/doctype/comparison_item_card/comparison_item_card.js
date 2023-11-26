@@ -56,7 +56,7 @@ frappe.ui.form.on('Comparison Item Card', {
                     ],
                     primary_action_label: "Submit",
                     primary_action(values) {
-                      console.log(`values===>${JSON.stringify(values)}`);
+                    //   console.log(`values===>${JSON.stringify(values)}`);
                       var f = values.first_name;
                       frappe.call({
                         method:"contracting.contract_api.upload_data_comaprsion_item_card",
@@ -111,6 +111,7 @@ frappe.ui.form.on('Comparison Item Card', {
                 filters: {
                 'item_code': d.item,
                 'selling': 1,
+                'price_list': frm.doc.price_list,
                 }
         
             }
