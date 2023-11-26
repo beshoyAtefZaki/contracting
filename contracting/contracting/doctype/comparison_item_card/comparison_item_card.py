@@ -56,8 +56,16 @@ class ComparisonItemCard(Document):
 		item_price = frappe.get_doc("Item Price" , item_price) 
 		if item_price.item_code == item and item_price.selling == 1:
 			return item_price.price_list_rate
-
 		
+	@frappe.whitelist()
+	def fetch_item_price(self , item):
+		item_price = ""
+		try :
+			item_price = frappe.get_last_doc("Item Price" , filters={"item_code" : item , "price_list" : self.price_list})
+			if item_price :
+				return item_price.name
+		except :
+			item_price
 			
 
 @frappe.whitelist()
