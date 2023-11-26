@@ -16,6 +16,7 @@
   "comparison",
   "qty",
   "stock_item_section",
+  "price_list",
   "items",
   "total_item_price",
   "amended_from",
@@ -208,12 +209,18 @@
    "fieldname": "margin_rate",
    "fieldtype": "Currency",
    "label": "Margin rate"
+  },
+  {
+   "fieldname": "price_list",
+   "fieldtype": "Link",
+   "label": "Price List",
+   "options": "Price List"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2023-11-15 09:49:39.759928",
+ "modified": "2023-11-26 13:32:20.623320",
  "modified_by": "Administrator",
  "module": "Contracting",
  "name": "Comparison Item Card",
