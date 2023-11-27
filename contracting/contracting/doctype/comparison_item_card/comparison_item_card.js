@@ -196,19 +196,6 @@ frappe.ui.form.on('Comparison Item Card Stock Item', {
                 },
              });
         }
-        if (d.item_price){
-            frm.call({
-                doc: frm.doc,
-                method: "validat_item",
-                args :{ "item_price" : d.item_price , "item" : d.item},
-                callback: function (r) {
-                    if (r.message){
-                        d.unit_price = r.message || 0.0
-                        frm.refresh_fields("items")
-                    }
-                },
-            });
-        }
         cur_frm.fields_dict["items"].grid.get_field("item_price").get_query = function(doc) {
             console.log('test---')
             return {
@@ -220,17 +207,42 @@ frappe.ui.form.on('Comparison Item Card Stock Item', {
         
         }
         frm.refresh_field('items')
+        if(frm.doc.price_list){
+            frm.call({
+                doc: frm.doc,
+                args : {"item" : d.item },
+                method: "fetch_item_price",
+                callback: function (r) {
+                    if (r.message){
+                        d.item_price = r.message
+                        frm.call({
+                            doc: frm.doc,
+                            method: "validat_item",
+                            args :{ "item_price" : d.item_price , "item" : d.item},
+                            callback: function (r) {
+                                if (r.message){
+                                    console.log(r.message)
+                                    d.unit_price = r.message || 0.0
+                                    frm.refresh_fields("items")
+                                }
+                            },
+                        });
+                    }
+                },
+            });
+ 
+        }
     },   
     item_price :(frm,cdt,cdn)=>{
         let row = locals[cdt][cdn]
-        if (row.item){
+        if (row.item && row.item_price){
             frm.call({
                 doc: frm.doc,
                 method: "validat_item",
                 args :{ "item_price" : row.item_price , "item" : row.item},
                 callback: function (r) {
                     if (r.message){
-                        row.unit_price = r.message || 0.0
+                        row.unit_price = r.message
                         frm.refresh_fields("items")
                     }
                 },
