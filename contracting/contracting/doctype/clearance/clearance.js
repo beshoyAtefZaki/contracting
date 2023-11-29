@@ -75,6 +75,7 @@ frappe.ui.form.on("Clearance", {
     });
   },
   refresh: (frm) => {
+    frm.events.get_cost_centrt(frm)
     frm.fields_dict["insurances"].grid.wrapper.find(".grid-add-row").hide();
     if (
       frm.doc.docstatus == 0 &&
@@ -417,6 +418,27 @@ frappe.ui.form.on("Clearance", {
       });
     }
   },
+  project:function(frm){
+    if(frm.doc.project){
+        frm.events.get_cost_centrt(frm)
+    }
+  },
+  get_cost_centrt:function(frm){
+    frm.call({
+      'method':"frappe.client.get_value",
+      'args': {
+        'doctype': 'Project',
+        'filters': {
+          'name': frm.doc.project
+        },
+        'fieldname':'cost_center'
+      },
+      'callback': function(res){
+          frm.set_value("cost_center", res.message.cost_center)
+          frm.refresh_field("cost_center")
+      },
+    })
+  }
 });
 frappe.ui.form.on("Deductions clearence Table", {
   amount: (frm, cdt, cdn) => {

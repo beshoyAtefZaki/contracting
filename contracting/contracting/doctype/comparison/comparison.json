@@ -44,6 +44,8 @@
   "taxes",
   "section_break_5vi8w",
   "clearance_states",
+  "section_break_fbt5a",
+  "draws",
   "totals_section",
   "total_qty",
   "total_price",
@@ -331,8 +333,7 @@
    "fieldname": "insurances",
    "fieldtype": "Table",
    "label": "Insurances",
-   "options": "Tender Incurance",
-   "read_only": 1
+   "options": "Tender Incurance"
   },
   {
    "allow_on_submit": 1,
@@ -387,11 +388,21 @@
    "fieldtype": "Table",
    "label": "Clearance States ",
    "options": "Tender States Template"
+  },
+  {
+   "fieldname": "section_break_fbt5a",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "draws",
+   "fieldtype": "Table",
+   "label": "Draws",
+   "options": "Comparison Draws"
   }
  ],
  "is_submittable": 1,
  "links": [],
- "modified": "2023-10-19 09:37:52.377536",
+ "modified": "2023-11-28 15:49:56.625492",
  "modified_by": "Administrator",
  "module": "Contracting",
  "name": "Comparison",

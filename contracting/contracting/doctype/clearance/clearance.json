@@ -35,6 +35,7 @@
   "required_by",
   "tender",
   "project",
+  "cost_center",
   "section_break_15",
   "down_payment_insurance_rate_",
   "payment_of_insurance_copy_of_operation_and_initial_delivery",
@@ -413,11 +414,18 @@
    "label": "Task",
    "options": "Task",
    "read_only": 1
+  },
+  {
+   "fetch_from": "project.cost_center",
+   "fieldname": "cost_center",
+   "fieldtype": "Link",
+   "label": "Cost Center",
+   "options": "Cost Center"
   }
  ],
  "is_submittable": 1,
  "links": [],
- "modified": "2022-09-11 11:09:02.978531",
+ "modified": "2023-11-29 11:19:13.650032",
  "modified_by": "Administrator",
  "module": "Contracting",
  "name": "Clearance",
