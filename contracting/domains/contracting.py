@@ -2,9 +2,6 @@ from __future__ import unicode_literals
 from frappe import _
 
 
-
-        
-
 data = {
     'custom_fields':
     {
@@ -670,14 +667,24 @@ data = {
 
     },
 
-    "properties": [{
+    "properties": [
+        {
         "doctype": "Journal Entry Account",
         "doctype_or_field": "DocField",
         "fieldname": "reference_type",
         "property": "options",
         "property_type": "Text",
         "value": "\nSales Invoice\nPurchase Invoice\nJournal Entry\nSales Order\nPurchase Order\nExpense Claim\nAsset\nLoan\nPayroll Entry\nEmployee Advance\nExchange Rate Revaluation\nInvoice Discounting\nFees\nPay and Receipt Document\nComparison\nClearance\nTender\nPayroll Month"
-    }],
+    },
+    {
+        "doctype": "Sales Order",
+        "doctype_or_field": "DocField",
+        "fieldname": "cost_center",
+        "property": "fetch_from",
+        "property_type": "Small Text",
+        "value": "project.cost_center"
+    },
+    ],
 
     'on_setup': 'contracting.contracting.add_client_Sccript.add_sales_order_script'
 }
